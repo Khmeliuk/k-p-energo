@@ -37,9 +37,6 @@ const TaskComponent = () => {
 
   const queryQuery = useQueryClient();
   const currentUser = queryQuery.getQueryData(["user"]);
-  console.log("====================================");
-  console.log(isFetched, "task");
-  console.log("====================================");
 
   const handleMenuClick = (event) => {
     setAnchorEl(event.currentTarget);

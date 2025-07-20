@@ -32,7 +32,10 @@ fastify.get("/notfound", async (request, reply) => {
 
 // Підключення плагіна CORS
 fastify.register(fastifyCors, {
-  origin: "http://localhost:5173", // Дозволити доступ з усіх доменів
+  origin: [
+    "http://localhost:5173", // для розробки
+    "https://k-p-energy.netlify.app", // фронтенд в продакшені
+  ],
   methods: ["GET", "PUT", "POST", "PATCH", "DELETE"], // Методи, які дозволені
   allowedHeaders: ["Content-Type", "Authorization"], // Заголовки, які дозволені
   credentials: true, // Дозволити передачу credentials, таких як куки

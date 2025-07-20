@@ -1,18 +1,11 @@
 import axios from "axios";
 
-const BASE_URL = import.meta.env.VITE_API_URL;
-// const BASE_URL = "https://k-p-energo.onrender.com/api/v1";
+// const BASE_URL = import.meta.env.VITE_API_URL;
+const BASE_URL = "https://k-p-energo.onrender.com/api/v1";
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
   withCredentials: true,
 });
-export const getAllTask = async () => {
-  try {
-    return await axiosInstance.get("/task");
-  } catch (error) {
-    console.log(error.message);
-  }
-};
 
 export const login = async (formData) => {
   try {
@@ -42,13 +35,10 @@ export const registration = async (formData) => {
 
 export const getTasks = async () => {
   try {
-    console.log("====================================");
-    console.log("getTasks");
-    console.log("====================================");
     const data = await axiosInstance.get("task");
     return data;
   } catch (error) {
-    console.log(error.message);
+    console.log("getTasks", error.message);
   }
 };
 
@@ -72,9 +62,7 @@ export const logout = async () => {
 
 export const refresh = async () => {
   try {
-    const response = await axiosInstance.get("/auth/check", {
-      withCredentials: true,
-    });
+    const response = await axiosInstance.get("/auth/check");
     console.log("====================================");
     console.log(response.data, "refresh");
     console.log("====================================");

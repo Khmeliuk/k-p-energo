@@ -104,9 +104,10 @@ export const loginHandler = async function (req, reply) {
       .status(201)
       .setCookie("token", token, {
         httpOnly: true,
-        maxAge: 3600, // Час життя cookie в секундах (1 година)
-        path: "/", // Cookie буде доступне у всьому додатку
-        sameSite: "strict", // Захист від CSRF атак
+        sameSite: "None",
+        secure: true,
+        maxAge: 3600,
+        path: "/",
       })
       .send(user);
   } catch (error) {
