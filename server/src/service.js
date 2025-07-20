@@ -50,6 +50,9 @@ fastify.register(
   },
   { prefix: "/api/v1" }
 );
+fastify.get("/", async (request, reply) => {
+  return { message: "Сервер працює!" };
+});
 
 //This route gets called if an error occurs within the app and throws an error
 fastify.get("/error", async (request, reply) => {
