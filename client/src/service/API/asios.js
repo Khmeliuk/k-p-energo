@@ -1,6 +1,7 @@
 import axios from "axios";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
+// const BASE_URL = "https://k-p-energo.onrender.com/api/v1";
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
   withCredentials: true,
@@ -41,7 +42,11 @@ export const registration = async (formData) => {
 
 export const getTasks = async () => {
   try {
-    return await axiosInstance.get("task");
+    console.log("====================================");
+    console.log("getTasks");
+    console.log("====================================");
+    const data = await axiosInstance.get("task");
+    return data;
   } catch (error) {
     console.log(error.message);
   }
