@@ -5,7 +5,7 @@ mongoose.Promise = global.Promise;
 
 const mongooseConnect = function (fastify, { loglevel: info }, next) {
   try {
-    mongoose.connect(process.env.local_BD, {
+    mongoose.connect(process.env.MONGODB_URL, {
       config: {
         autoIndex: true,
         useNewUrlParser: true,
