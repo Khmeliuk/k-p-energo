@@ -12,6 +12,8 @@ async function mongoosePlugin(fastify) {
       autoIndex: true,
       // ssl: true,
       tls: true,
+      retryWrites: true,
+      w: "majority",
     });
 
     fastify.log.info("✅ MongoDB connected");
