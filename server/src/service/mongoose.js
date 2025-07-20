@@ -10,7 +10,8 @@ async function mongoosePlugin(fastify) {
   try {
     await mongoose.connect(process.env.MONGODB_URL, {
       autoIndex: true,
-      ssl: true,
+      // ssl: true,
+      tls: true,
     });
 
     fastify.log.info("✅ MongoDB connected");
