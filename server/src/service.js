@@ -42,9 +42,14 @@ fastify.register(fastifyCors, {
 fastify.register(decoratorsPlugin);
 
 // custom routers
-fastify.register(authorization, { prefix: "/api/v1/auth" });
-fastify.register(userRouter, { prefix: "/api/v1/user" });
-fastify.register(taskRouter, { prefix: "/api/v1/task", logLevel: "debug" });
+fastify.register(
+  async function apiRoutes(fastify) {
+    fastify.register(authorization, { prefix: "/auth" });
+    fastify.register(userRouter, { prefix: "/user" });
+    fastify.register(taskRouter, { prefix: "/task" });
+  },
+  { prefix: "/api/v1" }
+);
 
 //This route gets called if an error occurs within the app and throws an error
 fastify.get("/error", async (request, reply) => {
