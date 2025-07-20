@@ -1,0 +1,57 @@
+import User from "../models/user.js";
+import Task from "../models/task.js";
+
+export const findAll = () => {
+  return User.find();
+};
+
+export const findAllTask = () => {
+  return Task.find();
+};
+
+export const findAllTaskYourTask = (id) => {
+  return Task.find({ owner: id }).populate("owner");
+};
+
+export const findOne = (params) => {
+  return User.findOne(params).select({
+    __v: false,
+  });
+};
+
+export const findOneTask = (params) => {
+  return Task.findOne(params).select({
+    __v: false,
+  });
+};
+
+export const createOne = async (newUser) => {
+  return await User.create(newUser);
+};
+
+export const createOnTask = async (newUser) => {
+  return await Task.create(newUser);
+};
+
+export const createOneTask = async (newUser) => {
+  return await Task.create(newUser);
+};
+
+export const updateOne = (id, data) => {
+  return User.findOneAndUpdate({ _id: id }, data);
+};
+
+export const updateOneTask = ({ id, owner }, data, opt) => {
+  return Task.findOneAndUpdate({ _id: id, owner: owner }, data, opt);
+};
+
+export const deleteOne = (id) => {
+  return User.findOneAndDelete({ _id: id });
+};
+
+export const deleteOneTask = ({ id, owner }) => {
+  console.log("====================================");
+  console.log(id, owner);
+  console.log("====================================");
+  return Task.findOneAndDelete({ _id: id, owner: owner });
+};

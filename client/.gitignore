@@ -1,0 +1,30 @@
+# dependencies
+/node_modules
+
+# build output
+/build
+/dist
+
+# dotenv environment variables
+.env
+.env.*.local
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# testing
+coverage/
+
+# editor files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# OS files
+.DS_Store
+Thumbs.db
