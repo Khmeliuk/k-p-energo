@@ -9,6 +9,7 @@ mongoose.Promise = global.Promise;
 async function mongoosePlugin(fastify) {
   try {
     await mongoose.connect(process.env.MONGODB_URL, {
+      dbName: "taskManeger",
       autoIndex: true,
       // ssl: true,
       tls: true,

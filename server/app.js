@@ -1,24 +1,19 @@
-import fp from "fastify-plugin";
-import mongoose from "mongoose";
-import dotenv from "dotenv";
+import fastify from "./src/service.js";
 
-dotenv.config();
+import "dotenv/config";
 
-mongoose.Promise = global.Promise;
-
-async function mongoosePlugin(fastify) {
+// server fastify
+const server = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URL, {
-      autoIndex: true,
-      ssl: true,
+    const address = await fastify.listen({
+      port: process.env.PORT || 3000,
+      host: "0.0.0.0",
     });
-
-    fastify.log.info("✅ MongoDB connected");
-    fastify.decorate("mongoose", mongoose);
-  } catch (err) {
-    fastify.log.error("❌ MongoDB connection failed:", err);
-    throw err;
+    fastify.log.info(`Server started at ${address}`);
+  } catch (error) {
+    fastify.log.error(error);
+    process.exit(1);
   }
-}
+};
 
-export default fp(mongoosePlugin);
+server();
