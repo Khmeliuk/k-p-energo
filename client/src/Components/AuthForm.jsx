@@ -1,156 +1,172 @@
-import styled from "styled-components";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 import { useState } from "react";
-import { Avatar } from "@mui/material";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import SelectSmall from "./muicomponent/handleChange .jsx";
-import { Copyright } from "./muicomponent/Typography.jsx";
-import { login, registration } from "../service/API/asios.js";
-import { useAuthMutation } from "../service/reactQuery/reactMutation.js";
-
-import { Alert } from "@mui/material";
+import styled from "styled-components";
+import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { login, registration } from "../service/API/asios";
+import { useAuthMutation } from "../service/reactQuery/reactMutation";
+import SelectSmall from "./smallComponent/SelectSmall";
+import { Copyright } from "./muicomponent/Typography";
 
 const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(false);
-
   const loginMutation = useAuthMutation(login);
-  const navigate = useNavigate();
-
   const registrationMutation = useAuthMutation(registration);
+  const navigate = useNavigate();
 
   const toggleForm = () => setIsLogin(!isLogin);
 
-  function loginHandler(e) {
+  const handleSubmit = (e) => {
     e.preventDefault();
+    console.log("====================================");
+    console.log("handleSubmit");
+    console.log("====================================");
     const formData = new FormData(e.currentTarget);
-    const formValues = Object.fromEntries(formData.entries());
-    loginMutation.mutate(formValues, {
-      onSuccess: (data) => {
-        navigate("/task"); // 🔄 редірект тут
+    const values = Object.fromEntries(formData.entries());
+    const mutation = isLogin ? loginMutation : registrationMutation;
+    mutation.mutate(values, {
+      onSuccess: () => {
+        if (isLogin) navigate("/task");
       },
     });
-  }
-
-  function registrationHandler(e) {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const formValues = Object.fromEntries(formData.entries());
-    registrationMutation.mutate(formValues);
-  }
+  };
 
   return (
-    <Container>
-      <Avatar sx={{ m: 1, bgcolor: "secondary.main", margin: "auto" }}>
-        <LockOutlinedIcon />
-      </Avatar>
-      <Typography variant="h4" align="center" gutterBottom>
-        {isLogin ? "Login" : "Register"}
-      </Typography>
-      <form
-        onSubmit={isLogin ? loginHandler : registrationHandler}
-        noValidate
-        autoComplete="off"
+    <Wrapper>
+      <FormWrapper
+        as={motion.div}
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
       >
-        {!isLogin && (
-          <TextField
-            name="name"
-            label=" Name"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            required
-          />
-        )}
-        {!isLogin && (
-          <TextField
-            name="lastName"
-            label="Last name"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            required
-          />
-        )}
-        {!isLogin && (
-          <SelectSmall
-            name={"role"}
-            options={["user", "super user", "admin"]}
-          />
-        )}
-        <TextField
-          name="email"
-          label="Email"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          required
-        />
-        <TextField
-          name="password"
-          label="Password"
-          type="password"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          required
-        />
-        {!isLogin && (
-          <TextField
-            label="Confirm Password"
+        <Icon>🔒</Icon>
+        <Title>{isLogin ? "Login" : "Register"}</Title>
+        <form onSubmit={handleSubmit} autoComplete="off">
+          {!isLogin && (
+            <>
+              <Input name="name" placeholder="Name" required />
+              <Input name="lastName" placeholder="Last Name" required />
+              <SelectSmall
+                name="role"
+                options={["user", "super user", "admin"]}
+              />
+            </>
+          )}
+          <Input name="email" placeholder="Email" required />
+          <Input
+            name="password"
+            placeholder="Password"
             type="password"
-            variant="outlined"
-            fullWidth
-            margin="normal"
             required
           />
-        )}
-        <StyledButton
-          type="submit"
-          variant="contained"
-          color="primary"
-          fullWidth
-        >
-          {isLogin ? "Login" : "Register"}
-        </StyledButton>
-        {(loginMutation.error || registrationMutation.error) && (
-          <Alert severity="error" sx={{ mt: 2 }}>
-            {loginMutation.error?.response?.data?.message ||
-              registrationMutation.error?.response?.data?.message ||
-              "Невірний логін чи пароль"}
-          </Alert>
-        )}
-        <Button onClick={toggleForm} fullWidth sx={{ marginTop: 2 }}>
-          {isLogin
-            ? "Don't have an account? Register"
-            : "Already have an account? Login"}
-        </Button>
-      </form>
-      <Copyright sx={{ mt: 8, mb: 4 }} />
-    </Container>
+          {!isLogin && (
+            <Input
+              name="confirmPassword"
+              placeholder="Confirm Password"
+              type="password"
+              required
+            />
+          )}
+          <SubmitButton type="submit">
+            {isLogin ? "Login" : "Register"}
+          </SubmitButton>
+
+          {(loginMutation.error || registrationMutation.error) && (
+            <ErrorMessage>
+              {loginMutation.error?.response?.data?.message ||
+                registrationMutation.error?.response?.data?.message ||
+                "Невірний логін чи пароль"}
+            </ErrorMessage>
+          )}
+
+          <Toggle onClick={toggleForm}>
+            {isLogin
+              ? "Don't have an account? Register"
+              : "Already have an account? Login"}
+          </Toggle>
+        </form>
+        <Copyright />
+      </FormWrapper>
+    </Wrapper>
   );
 };
 
-const Container = styled(Box)`
-  max-width: 400px;
-  margin: 50px auto;
-  padding: 20px;
-  /* background-color: #f5f5f5; */
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+// Styled Components
+const Wrapper = styled.div`
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: linear-gradient(to bottom right, #e0eafc, #cfdef3);
 `;
 
-const StyledButton = styled(Button)`
-  && {
-    margin-top: 20px;
-    background-color: #1976d2;
-    &:hover {
-      background-color: #115293;
-    }
+const FormWrapper = styled.div`
+  width: 100%;
+  max-width: 400px;
+  padding: 2rem;
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+`;
+
+const Icon = styled.div`
+  font-size: 3rem;
+  text-align: center;
+  margin-bottom: 1rem;
+`;
+
+const Title = styled.h2`
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 1.75rem;
+`;
+
+const Input = styled.input`
+  width: 90%;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+
+  &:focus {
+    border-color: #3f51b5;
+    outline: none;
   }
+`;
+
+const SubmitButton = styled.button`
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: #3f51b5;
+  color: white;
+  border: none;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s;
+
+  &:hover {
+    background: #303f9f;
+  }
+`;
+
+const Toggle = styled.button`
+  background: none;
+  border: none;
+  color: #3f51b5;
+  margin-top: 1rem;
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+  font-size: 0.9rem;
+`;
+
+const ErrorMessage = styled.div`
+  margin-top: 1rem;
+  color: #d32f2f;
+  font-size: 0.9rem;
+  text-align: center;
 `;
 
 export default AuthForm;
