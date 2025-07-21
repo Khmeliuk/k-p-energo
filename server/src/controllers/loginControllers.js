@@ -83,16 +83,19 @@ export const loginHandler = async function (req, reply) {
     console.log("====================================");
     console.log("login");
     console.log("====================================");
+
     const user = await findOne({ email: req.body.email }).select("-__v");
+
     if (!user) {
-      reply.status(401).send("invalid login or password");
+      return reply.status(401).send("invalid login or password");
     }
 
     const isValid = await user.isValidPassword(req.body.password);
 
     if (!isValid) {
-      reply.status(401).send("invalid login or password");
+      return reply.status(401).send("invalid login or password");
     }
+
     const token = req.server.jwt.sign({
       _id: user._id,
       name: user.name,
@@ -100,21 +103,20 @@ export const loginHandler = async function (req, reply) {
       role: user.role,
     });
 
-    reply
+    return reply
       .status(201)
       .setCookie("token", token, {
         httpOnly: true,
         sameSite: "None",
         secure: true,
-        maxAge: 3600,
+        maxAge: 3600, // 1 година
         path: "/",
       })
       .send(user);
   } catch (error) {
-    reply.status(400).send(error.message);
+    return reply.status(400).send(error.message);
   }
 };
-
 export const logoutHandler = async function (req, reply) {
   console.log("====================================");
   console.log("logout");
