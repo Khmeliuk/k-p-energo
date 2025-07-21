@@ -32,10 +32,18 @@ fastify.get("/notfound", async (request, reply) => {
 
 // Підключення плагіна CORS
 fastify.register(fastifyCors, {
-  origin: [
-    "http://localhost:5173", // для розробки
-    "https://k-p-energy.netlify.app", // фронтенд в продакшені
-  ],
+  origin: (origin, cb) => {
+    const allowedOrigins = [
+      "http://localhost:5173",
+      "https://k-p-energy.netlify.app",
+    ];
+
+    if (!origin || allowedOrigins.includes(origin)) {
+      cb(null, true); // ✅ дозволено
+    } else {
+      cb(new Error("Not allowed"), false); // ❌ заборонено
+    }
+  },
   methods: ["GET", "PUT", "POST", "PATCH", "DELETE"], // Методи, які дозволені
   allowedHeaders: ["Content-Type", "Authorization"], // Заголовки, які дозволені
   credentials: true, // Дозволити передачу credentials, таких як куки
