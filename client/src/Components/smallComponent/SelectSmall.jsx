@@ -16,7 +16,7 @@ const SelectSmall = ({ name, options = [] }) => {
       <HiddenInput type="hidden" name={name} value={selected} />
       <SelectBox onClick={() => setIsOpen((prev) => !prev)}>
         {selected}
-        <Arrow isOpen={isOpen}>▾</Arrow>
+        <Arrow $isOpen={isOpen}>▾</Arrow>
       </SelectBox>
       <AnimatePresence>
         {isOpen && (
@@ -73,9 +73,11 @@ const SelectBox = styled.div`
   }
 `;
 
-const Arrow = styled.span`
+const Arrow = styled.span.attrs(() => ({
+  // нічого не передаємо в DOM
+}))`
   transition: transform 0.2s ease;
-  transform: ${({ isOpen }) => (isOpen ? "rotate(180deg)" : "rotate(0deg)")};
+  transform: ${({ $isOpen }) => ($isOpen ? "rotate(180deg)" : "rotate(0deg)")};
 `;
 
 const OptionsList = styled.ul`

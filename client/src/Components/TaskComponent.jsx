@@ -1,7 +1,6 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { useNavigate } from "react-router-dom";
-import { MyContext } from "../context/reactContext";
 import { useAllTaskQuery } from "../service/reactQuery/reactQuery";
 import { useQueryClient } from "@tanstack/react-query";
 import { logout } from "../service/API/asios";
@@ -98,7 +97,6 @@ const TaskContainer = styled.div`
 `;
 
 const TaskComponent = () => {
-  const { store, setStore } = useContext(MyContext);
   const [menuOpen, setMenuOpen] = useState(false);
   const { data: tasks, isLoading, isError, isFetched } = useAllTaskQuery();
   const queryClient = useQueryClient();

@@ -10,8 +10,7 @@ import {
   Grid,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import { useContext, useState } from "react";
-import { MyContext } from "../src/context/reactContext";
+import { useState } from "react";
 import CustomModal from "../src/Components/Modal/Modal";
 import TaskForm from "../src/Components/TaskForm.jsx/TaskForm";
 import { useAllTaskQuery } from "../src/service/reactQuery/reactQuery";
@@ -27,7 +26,6 @@ const user = {
 };
 
 const TaskComponent = () => {
-  const { store, setStore } = useContext(MyContext);
   const [anchorEl, setAnchorEl] = useState(null);
 
   const { data: tasks, isLoading, isError, isFetched } = useAllTaskQuery();
