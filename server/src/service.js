@@ -44,9 +44,7 @@ fastify.register(fastifyCors, {
       cb(new Error("Not allowed"), false); // ❌ заборонено
     }
   },
-  methods: ["GET", "PUT", "POST", "PATCH", "DELETE"], // Методи, які дозволені
-  allowedHeaders: ["Content-Type", "Authorization"], // Заголовки, які дозволені
-  credentials: true, // Дозволити передачу credentials, таких як куки
+  credentials: true,
 });
 
 // decorators
