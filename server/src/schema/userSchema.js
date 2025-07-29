@@ -9,7 +9,7 @@ export const getAllUsers = {
 export const getUser = {
   querystring: schemaUnification.querystring,
   headers: schemaUnification.headers,
-  param: {
+  params: {
     type: "string",
   },
   response: schemaUnification.response,
@@ -54,7 +54,7 @@ export const logout = {
 
 export const deleteUser = {
   querystring: schemaUnification.querystring,
-  param: { type: "string" },
+  params: { type: "string" },
   removeAdditional: "all",
   headers: schemaUnification.headers,
   response: schemaUnification.response,
@@ -62,7 +62,7 @@ export const deleteUser = {
 
 export const updateUser = {
   querystring: schemaUnification.querystring,
-  param: { type: "string" },
+  params: { type: "string" },
   removeAdditional: "all",
   headers: schemaUnification.headers,
   body: {

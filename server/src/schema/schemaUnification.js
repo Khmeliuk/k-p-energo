@@ -8,22 +8,11 @@ export const schemaUnification = {
       address: { type: "string" },
       date: { type: "string" },
       task: { type: "array" },
+      status: { type: "string" },
       update: {
         type: "array",
-        // items: {
-        //   type: "object",
-        //   properties: {
-        //     owner: { type: "string" },
-        //     update: {
-        //       type: "object",
-        //       properties: {
-        //         owner: { type: "string" },
-        //       },
-        //     },
-        //   },
-        // },
       },
-      task: { type: "string" },
+      description: { type: "string" },
     },
   },
 

@@ -1,11 +1,9 @@
 import mongoose from "mongoose";
-import User from "./user.js";
 
 const TaskSchema = new mongoose.Schema({
   owner: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: User,
-    // required: [true, "owner is required"],
+    ref: "User",
   },
   department: {
     type: Number,
@@ -13,25 +11,34 @@ const TaskSchema = new mongoose.Schema({
     required: [true, "department is required"],
     trim: true,
   },
+  task: {
+    type: [String],
+    required: [true, "task is required"],
+  },
   address: {
     type: String,
     required: [true, "address is required"],
     trim: true,
   },
-  date: {
+  dateToEndTask: {
+    type: Date,
+  },
+  createDate: {
     type: Date,
     default: () => Date.now(),
   },
   update: [
     {
-      owner: {},
+      owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
       updateTime: { type: Date, default: Date.now },
-      patch: {},
+      patch: { type: mongoose.Schema.Types.Mixed },
     },
   ],
-
-  task: [{ type: String, required: [true, "task is required"] }],
+  description: [String],
 });
 
-const task = mongoose.model("Task", TaskSchema);
-export default task;
+const Task = mongoose.model("Task", TaskSchema);
+export default Task;

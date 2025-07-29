@@ -7,6 +7,7 @@ import { logout } from "../service/API/asios";
 import TaskCard from "./TaskCard";
 import CustomModal from "./Modal/Modal";
 import TaskForm from "./TaskForm.jsx/TaskForm";
+import TaskFilterPanel from "./smallComponent/TaskFilterPanel";
 
 const user = {
   name: "John Doe",
@@ -145,20 +146,22 @@ const TaskComponent = () => {
           </Dropdown>
         )}
       </Header>
-
-      <TaskContainer>
-        {isFetched &&
-          tasks?.data?.map((task) => (
-            <TaskCard
-              key={task._id}
-              department={task.department}
-              address={task.address}
-              date={task.date}
-              tasks={task.task}
-              comment={task?.comment}
-            />
-          ))}
-      </TaskContainer>
+      <TaskFilterPanel>
+        {" "}
+        <TaskContainer>
+          {isFetched &&
+            tasks?.data?.map((task) => (
+              <TaskCard
+                key={task._id}
+                department={task.department}
+                address={task.address}
+                date={task.date}
+                tasks={task.task}
+                comment={task?.comment}
+              />
+            ))}
+        </TaskContainer>
+      </TaskFilterPanel>
 
       <CustomModal>
         <TaskForm />

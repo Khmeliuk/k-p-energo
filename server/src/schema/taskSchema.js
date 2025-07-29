@@ -29,6 +29,6 @@ export const updateTask = {
 export const deleteTask = {
   querystring: schemaUnification.querystring,
   headers: schemaUnification.headers,
-  param: { type: "string" },
+  params: { type: "string" },
   response: { "2xx": schemaUnification.taskSchema },
 };

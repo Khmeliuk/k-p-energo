@@ -36,9 +36,7 @@ const CustomModal = ({ children }) => {
       <StyledDialog open={open} onClose={handleClose}>
         <DialogTitle>Add New Task</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            To add a new task, please fill out the following information.
-          </DialogContentText>
+          <DialogContentText></DialogContentText>
           {children}
         </DialogContent>
 

@@ -1,15 +1,14 @@
-import * as React from "react";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import PropTypes from "prop-types";
 
-export default function SelectSmall({ options, name }) {
-  const [optionValue, setoptionValue] = React.useState("");
+export default function SelectSmall({ options, name, onChange }) {
+  // const [optionValue, setoptionValue] = React.useState("");
 
   const handleChange = (event) => {
-    setoptionValue(event.target.value);
+    onChange(event.target.value);
   };
 
   return (

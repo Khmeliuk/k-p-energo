@@ -31,10 +31,7 @@ export const getTaskHandler = async function (req, reply) {
 
 export const addTaskHandler = async function (req, reply) {
   try {
-    console.log("====================================");
-    console.log(req.body);
-    console.log("====================================");
-    const newTask = { ...req.body, owner: req.user.id };
+    const newTask = { ...req.body, owner: req.user._id };
 
     const addTask = await createOnTask(newTask);
     reply.status(201).send(addTask);
