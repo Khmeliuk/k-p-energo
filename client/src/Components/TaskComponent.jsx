@@ -138,7 +138,7 @@ const TaskComponent = () => {
         <Title>My Application</Title>
         <UserInfo onClick={toggleMenu}>
           <span>
-            {/* {currentUser?.data?.name + " " + currentUser?.data?.lastName} */}
+            {currentUser?.data?.name + " " + currentUser?.data?.lastName}
           </span>
           <Avatar src={user.avatarUrl} />
         </UserInfo>
