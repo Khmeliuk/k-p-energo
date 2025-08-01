@@ -15,4 +15,10 @@ export const GlobalStyles = createGlobalStyle`
   .pac-item:hover {
     background-color: #e0e0e0;
   }
+  
+  *,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 `;

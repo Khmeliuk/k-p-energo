@@ -1,56 +1,290 @@
-import { motion } from "framer-motion";
+// import { TextField, Switch, FormControlLabel, Box } from "@mui/material";
+import styled from "styled-components";
+import PropTypes from "prop-types";
+import { dateConvector } from "../../service/methods/dateConvector";
+import { useState, useMemo } from "react";
+import {
+  TextField,
+  FormControlLabel,
+  Switch,
+  Box,
+  IconButton,
+  Tooltip,
+} from "@mui/material";
+import {
+  CheckCircle,
+  Cancel,
+  PendingActions,
+  HourglassBottom,
+} from "@mui/icons-material";
 
-const TaskCard = ({ name, department, address, tasks, comment, date }) => {
+// const CardContainer = styled(Box)`
+//   border: 1px solid #ddd;
+//   border-radius: 8px;
+//   padding: 16px;
+//   max-width: 400px;
+//   margin: 20px auto;
+//   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+// `;
+
+const CardContainer = styled.div`
+  position: relative;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+  background: #fff;
+  margin-bottom: 1rem;
+`;
+
+const StatusIcon = styled.div`
+  position: absolute;
+  top: 8px;
+  right: 8px;
+`;
+
+// const TaskCard = ({
+//   owner,
+//   department,
+//   address,
+//   tasks,
+//   dateToEndTask,
+//   createDate,
+// }) => {
+//   const [isEditable, setIsEditable] = useState(false);
+
+//   const handleSwitchChange = () => {
+//     setIsEditable(!isEditable);
+//   };
+//   const newdateToEndTask = dateConvector(dateToEndTask);
+//   const newCreateDate = dateConvector(createDate);
+
+//   return (
+//     <CardContainer>
+//       <FormControlLabel
+//         control={<Switch checked={isEditable} onChange={handleSwitchChange} />}
+//         label="Edit Mode"
+//       />
+//       <TextField
+//         label="Owner"
+//         variant="outlined"
+//         fullWidth
+//         margin="normal"
+//         InputProps={{
+//           readOnly: !isEditable,
+//         }}
+//         defaultValue={`${owner.name} ${owner.lastName}`}
+//       />
+//       <TextField
+//         label="Department"
+//         variant="outlined"
+//         fullWidth
+//         margin="normal"
+//         InputProps={{
+//           readOnly: !isEditable,
+//         }}
+//         defaultValue={department}
+//       />
+//       <TextField
+//         label="Task"
+//         variant="outlined"
+//         fullWidth
+//         margin="normal"
+//         InputProps={{
+//           readOnly: !isEditable,
+//         }}
+//         defaultValue={tasks}
+//       />
+//       <TextField
+//         label="Address"
+//         variant="outlined"
+//         fullWidth
+//         margin="normal"
+//         InputProps={{
+//           readOnly: !isEditable,
+//         }}
+//         defaultValue={address}
+//       />
+//       <TextField
+//         label="createDate"
+//         variant="outlined"
+//         fullWidth
+//         margin="normal"
+//         InputProps={{
+//           readOnly: !isEditable,
+//         }}
+//         defaultValue={newCreateDate}
+//       />
+//       <TextField
+//         label="dateToEndTask"
+//         variant="outlined"
+//         fullWidth
+//         margin="normal"
+//         InputProps={{
+//           readOnly: !isEditable,
+//         }}
+//         defaultValue={newdateToEndTask}
+//       />
+//     </CardContainer>
+//   );
+// };
+
+const TaskCard = ({
+  owner,
+  department,
+  address,
+  tasks,
+  dateToEndTask,
+  createDate,
+}) => {
+  const [isEditable, setIsEditable] = useState(false);
+  const [status, setStatus] = useState("заплановане");
+
+  const newdateToEndTask = dateConvector(dateToEndTask);
+  const newCreateDate = dateConvector(createDate);
+  const now = new Date();
   console.log("====================================");
-  console.log({ name, department, address, tasks, comment, date }, "task");
+  console.log(Date(newdateToEndTask));
   console.log("====================================");
+
+  const handleSwitchChange = () => {
+    setIsEditable((prev) => !prev);
+  };
+
+  const getStatusIcon = useMemo(() => {
+    switch (status) {
+      case "виконано":
+        return (
+          <Tooltip title="Виконано">
+            <CheckCircle color="success" />
+          </Tooltip>
+        );
+      case "не виконано":
+        return (
+          <Tooltip title="Не виконано">
+            <Cancel color="error" />
+          </Tooltip>
+        );
+      case "виконується":
+        return (
+          <Tooltip title="Виконується">
+            <HourglassBottom color="warning" />
+          </Tooltip>
+        );
+      case "заплановане":
+      default:
+        return (
+          <Tooltip title="Заплановане">
+            <PendingActions color="disabled" />
+          </Tooltip>
+        );
+    }
+  }, [status]);
+
+  // Автоматична логіка для статусу (окрім ручного)
+  useMemo(() => {
+    if (status === "виконано" || status === "не виконано") return;
+    const taskEnd = new Date(dateToEndTask);
+    if (now === taskEnd) {
+      setStatus("виконується");
+    } else if (now < taskEnd) {
+      setStatus("заплановане");
+    } else if (now > taskEnd) {
+      setStatus("заплановане");
+    }
+  }, [dateToEndTask]);
+
+  const toggleStatus = () => {
+    if (!isEditable) return;
+    setStatus((prev) => (prev === "виконано" ? "не виконано" : "виконано"));
+  };
+
   return (
-    <motion.div
-      className="bg-white shadow-lg rounded-2xl p-4 sm:p-6 w-full max-w-md mx-auto my-4 border border-gray-100"
-      initial={{ opacity: 0, y: 40 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: "easeOut" }}
-    >
-      <h2 className="text-xl font-semibold text-gray-800 mb-2">{name}</h2>
+    <CardContainer>
+      <StatusIcon>
+        <IconButton onClick={toggleStatus} disabled={!isEditable}>
+          {getStatusIcon}
+        </IconButton>
+      </StatusIcon>
 
-      <div className="text-sm text-gray-600 mb-2">
-        <span className="font-medium">Відділ:</span> {department}
-      </div>
-
-      <div className="text-sm text-gray-600 mb-2">
-        <span className="font-medium">Адреса:</span> {address}
-      </div>
-
-      {date && (
-        <div className="text-sm text-gray-600 mb-2">
-          <span className="font-medium">Час:</span>{" "}
-          {typeof time === "string"
-            ? date
-            : new Date(date).toLocaleString("uk-UA", {
-                dateStyle: "medium",
-                timeStyle: "short",
-              })}
-        </div>
-      )}
-
-      <div className="text-sm text-gray-600 mb-2">
-        <span className="font-medium">Задачі:</span>{" "}
-        {Array.isArray(tasks)
-          ? tasks.map((task, i) => (
-              <li key={i} className="list-disc ml-4">
-                {task}
-              </li>
-            ))
-          : tasks}
-      </div>
-
-      {comment && (
-        <div className="text-sm text-gray-700 mt-3">
-          <span className="font-medium">Коментар:</span> {comment}
-        </div>
-      )}
-    </motion.div>
+      <FormControlLabel
+        control={<Switch checked={isEditable} onChange={handleSwitchChange} />}
+        label="Edit Mode"
+      />
+      <TextField
+        label="Owner"
+        variant="outlined"
+        fullWidth
+        margin="normal"
+        InputProps={{
+          readOnly: !isEditable,
+        }}
+        defaultValue={`${owner.name} ${owner.lastName}`}
+      />
+      <TextField
+        label="Department"
+        variant="outlined"
+        fullWidth
+        margin="normal"
+        InputProps={{
+          readOnly: !isEditable,
+        }}
+        defaultValue={department}
+      />
+      <TextField
+        label="Task"
+        variant="outlined"
+        fullWidth
+        margin="normal"
+        InputProps={{
+          readOnly: !isEditable,
+        }}
+        defaultValue={tasks}
+      />
+      <TextField
+        label="Address"
+        variant="outlined"
+        fullWidth
+        margin="normal"
+        InputProps={{
+          readOnly: !isEditable,
+        }}
+        defaultValue={address}
+      />
+      <TextField
+        label="createDate"
+        variant="outlined"
+        fullWidth
+        margin="normal"
+        InputProps={{
+          readOnly: true,
+        }}
+        defaultValue={newCreateDate}
+      />
+      <TextField
+        label="dateToEndTask"
+        variant="outlined"
+        fullWidth
+        margin="normal"
+        InputProps={{
+          readOnly: true,
+        }}
+        defaultValue={newdateToEndTask}
+      />
+    </CardContainer>
   );
 };
 
 export default TaskCard;
+
+TaskCard.propTypes = {
+  owner: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    lastName: PropTypes.string.isRequired,
+  }),
+  department: PropTypes.string,
+  address: PropTypes.string,
+  tasks: PropTypes.arrayOf(PropTypes.string).isRequired,
+  dateToEndTask: PropTypes.string.isRequired,
+  createDate: PropTypes.string.isRequired,
+};

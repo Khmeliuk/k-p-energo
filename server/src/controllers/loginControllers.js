@@ -80,11 +80,10 @@ export const deleteUserHandler = async function (req, reply) {
 
 export const loginHandler = async function (req, reply) {
   try {
-    console.log("====================================");
-    console.log("login");
-    console.log("====================================");
-
     const user = await findOne({ email: req.body.email }).select("-__v");
+    console.log("====================================");
+    console.log("login", user);
+    console.log("====================================");
 
     if (!user) {
       return reply.status(401).send("invalid login or password");
@@ -99,6 +98,7 @@ export const loginHandler = async function (req, reply) {
     const token = req.server.jwt.sign({
       _id: user._id,
       name: user.name,
+      lastName: user.lastName,
       email: user.email,
       role: user.role,
     });

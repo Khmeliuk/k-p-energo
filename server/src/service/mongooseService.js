@@ -2,15 +2,27 @@ import User from "../models/user.js";
 import Task from "../models/task.js";
 
 export const findAll = () => {
+  console.log("====================================");
+  console.log("findAll");
+  console.log("====================================");
   return User.find();
 };
 
 export const findAllTask = () => {
+  console.log("====================================");
+  console.log("findAllTask");
+  console.log("====================================");
   return Task.find();
 };
 
 export const findAllTaskYourTask = (id) => {
-  return Task.find({ owner: id }).populate("owner");
+  console.log("====================================");
+  console.log("id", id);
+  console.log("====================================");
+  return Task.find({ owner: id }).populate({
+    path: "owner",
+    select: "-password",
+  });
 };
 
 export const findOne = (params) => {

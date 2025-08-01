@@ -6,9 +6,6 @@ const AddressAutosuggest = () => {
   const [value, setvalue] = useState("");
   const onChange = (e) => {
     setvalue(e);
-    console.log("====================================");
-    console.log(e);
-    console.log("====================================");
   };
 
   const handleSuggestionsFetchRequested = ({ value }) => {

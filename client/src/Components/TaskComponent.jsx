@@ -1,10 +1,13 @@
 import { useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { useNavigate } from "react-router-dom";
-import { useAllTaskQuery } from "../service/reactQuery/reactQuery";
+import {
+  useAllTaskQuery,
+  useGetCurrentUser,
+} from "../service/reactQuery/reactQuery";
 import { useQueryClient } from "@tanstack/react-query";
-import { logout } from "../service/API/asios";
-import TaskCard from "./TaskCard";
+import { logout } from "../service/API/axios";
+import TaskCard from "./smallComponent/TaskCard";
 import CustomModal from "./Modal/Modal";
 import TaskForm from "./TaskForm.jsx/TaskForm";
 import TaskFilterPanel from "./smallComponent/TaskFilterPanel";
@@ -100,10 +103,13 @@ const TaskContainer = styled.div`
 const TaskComponent = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const { data: tasks, isLoading, isError, isFetched } = useAllTaskQuery();
+  const { data: currentUser, isLoading: currentUserIsLoading } =
+    useGetCurrentUser();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const currentUser = queryClient.getQueryData(["user"]);
-
+  console.log("====================================");
+  console.log(currentUser);
+  console.log("====================================");
   const toggleMenu = () => setMenuOpen((prev) => !prev);
 
   const handleMenuClick = async (option) => {
@@ -119,7 +125,11 @@ const TaskComponent = () => {
     }
   };
 
-  if (isLoading) return <div>Loading tasks...</div>;
+  console.log("====================================");
+  console.log(currentUser);
+  console.log("====================================");
+
+  if (isLoading && currentUserIsLoading) return <div>Loading tasks...</div>;
   if (isError) return <div>Error loading tasks.</div>;
 
   return (
@@ -128,7 +138,7 @@ const TaskComponent = () => {
         <Title>My Application</Title>
         <UserInfo onClick={toggleMenu}>
           <span>
-            {currentUser?.data?.name} {currentUser?.data?.lastName}
+            {currentUser?.data?.name + " " + currentUser?.data?.lastName}
           </span>
           <Avatar src={user.avatarUrl} />
         </UserInfo>
@@ -153,11 +163,14 @@ const TaskComponent = () => {
             tasks?.data?.map((task) => (
               <TaskCard
                 key={task._id}
+                owner={task.owner}
                 department={task.department}
                 address={task.address}
                 date={task.date}
                 tasks={task.task}
                 comment={task?.comment}
+                createDate={task?.createDate}
+                dateToEndTask={task?.dateToEndTask}
               />
             ))}
         </TaskContainer>

@@ -9,7 +9,10 @@ import {
 
 export const getAllTaskHandler = async function (req, reply) {
   try {
-    const task = await findAllTaskYourTask(req.user.id);
+    const task = await findAllTaskYourTask(req.user._id);
+    console.log("====================================");
+    console.log(task);
+    console.log("====================================");
     reply.status(200).send(task);
   } catch (error) {
     reply.status(404).send(error.message);
@@ -32,7 +35,9 @@ export const getTaskHandler = async function (req, reply) {
 export const addTaskHandler = async function (req, reply) {
   try {
     const newTask = { ...req.body, owner: req.user._id };
-
+    console.log("====================================");
+    console.log("addTaskHandler");
+    console.log("====================================");
     const addTask = await createOnTask(newTask);
     reply.status(201).send(addTask);
   } catch (error) {

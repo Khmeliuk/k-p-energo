@@ -3,7 +3,7 @@ export const schemaUnification = {
     type: "object",
     properties: {
       _id: { type: "string" },
-      owner: { type: "string" },
+      owner: { type: "object" },
       department: { type: "number" },
       address: { type: "string" },
       date: { type: "string" },

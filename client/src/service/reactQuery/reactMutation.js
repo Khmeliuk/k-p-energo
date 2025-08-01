@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createTask } from "../API/asios";
+import { createTask } from "../API/axios";
 
 export const useAuthMutation = function (fetchfunction) {
   const queryClient = useQueryClient();
@@ -7,6 +7,9 @@ export const useAuthMutation = function (fetchfunction) {
   return useMutation({
     mutationFn: fetchfunction,
     onSuccess: (data) => {
+      console.log("====================================");
+      console.log(data, "useMutation");
+      console.log("====================================");
       queryClient.setQueryData(["user"], data);
     },
     onError: (error) => {

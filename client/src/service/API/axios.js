@@ -10,9 +10,6 @@ const axiosInstance = axios.create({
 export const login = async (formData) => {
   try {
     const user = await axiosInstance.post("/auth/login", formData);
-    console.log("====================================");
-    console.log(user, "axios");
-    console.log("====================================");
     return user;
   } catch (error) {
     if (error.response && error.response.data?.message) {
@@ -66,10 +63,7 @@ export const logout = async () => {
 export const refresh = async () => {
   try {
     const response = await axiosInstance.get("/auth/check");
-    console.log("====================================");
-    console.log(response.data, "refresh");
-    console.log("====================================");
-    return response.data;
+    return response;
   } catch (error) {
     console.error("Refresh error:", error);
     throw error; // або поверни null / false, якщо не хочеш кидати

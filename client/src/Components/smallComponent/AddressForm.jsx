@@ -1,7 +1,7 @@
 import { Fab, FormGroup, TextField } from "@mui/material";
-import GoogleAutocomplete from "../GoogleAutocomplete";
+import GoogleAutocomplete from "./GoogleAutocomplete";
 import styled from "styled-components";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import PropTypes from "prop-types";
 
@@ -37,9 +37,18 @@ const AddressForm = ({ onChange }) => {
   const [fullstreet, setfullstreet] = useState([]);
   const [fullAddress, setFullAddress] = useState("");
 
+  const createFullAddress = useCallback(() => {
+    const all = [cityName, ...fullstreet].filter(Boolean).join(", ") + ".";
+    console.log("====================================");
+    console.log(all);
+    console.log("====================================");
+    setFullAddress(all);
+    onChange(all);
+  }, [cityName, fullstreet]);
+
   useEffect(() => {
     createFullAddress();
-  }, [fullAddress]);
+  }, [cityName, fullstreet, createFullAddress]);
 
   // Зберігаємо місто (bounds для вулиць)
   const getCityLocation = (place) => {
@@ -79,15 +88,6 @@ const AddressForm = ({ onChange }) => {
     setStreet("");
     setBlock("");
     setRoom("");
-  };
-
-  const createFullAddress = () => {
-    const all = [cityName, ...fullstreet].filter(Boolean).join(",") + ".";
-    setFullAddress(all);
-    console.log("====================================");
-    console.log(all);
-    console.log("====================================");
-    onChange(all);
   };
 
   return (

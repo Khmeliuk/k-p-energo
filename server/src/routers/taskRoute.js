@@ -18,7 +18,7 @@ export default async function taskRouter(fastify, opt) {
     method: "GET",
     url: "/",
     onRequest: [fastify.authenticate],
-    schema: getAllTasks,
+    // schema: getAllTasks,
     attachValidation: "error attachValidation",
     handler: getAllTaskHandler,
   });
@@ -36,7 +36,7 @@ export default async function taskRouter(fastify, opt) {
     method: "post",
     url: "/",
     onRequest: [fastify.authenticate],
-    schema: addTask,
+    // schema: addTask,
     attachValidation: "true",
     handler: addTaskHandler,
   });

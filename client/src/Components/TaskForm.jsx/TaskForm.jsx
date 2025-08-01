@@ -1,115 +1,4 @@
-// import { Box, Button, TextField } from "@mui/material";
-// import styled from "styled-components";
-// import SelectSmall from "../muicomponent/handleChange ";
-// import ResponsiveDateTimePickers from "../muicomponent/DateTimePicker";
-// import { useCreateTask } from "../../service/reactQuery/reactMutation";
-// import MultipleSelectChip from "../muicomponent/MultipleSelect";
-// import AddressForm from "../AddressForm";
-// import { useQueryClient } from "@tanstack/react-query";
-
-// const StyledBox = styled.div`
-//   transform: translate(-50%, -50%);
-//   width: 400px;
-//   background-color: white;
-//   border: none;
-//   box-shadow: 24px;
-//   padding: 16px;
-//   display: contents;
-//   gap: 16px;
-// `;
-
-// import { useState } from "react";
-// import { Box, Button, TextField } from "@mui/material";
-// import SelectSmall from "./SelectSmall";
-// import MultipleSelectChip from "./MultipleSelectChip";
-// import ResponsiveDateTimePickers from "./ResponsiveDateTimePickers";
-// import AddressForm from "./AddressForm";
-// import { StyledBox } from "./StyledBox";
-// import { useCreateTask } from "../hooks/useCreateTask";
-
-// const TaskForm = () => {
-//   const createSingleTask = useCreateTask();
-
-//   const [formData, setFormData] = useState({
-//     department: "",
-//     task: [],
-//     dateToEndTask: null,
-//     address: "",
-//     description: "",
-//   });
-
-//   const handleChange = (field) => (value) => {
-//     setFormData((prev) => ({ ...prev, [field]: value }));
-//   };
-
-//   const handleSubmit = (e) => {
-//     e.preventDefault();
-//     console.log(formData);
-//     createSingleTask.mutate(formData);
-//     // Очистити форму
-//     setFormData({
-//       department: "",
-//       task: [],
-//       dateToEndTask: null,
-//       address: "",
-//       description: "",
-//     });
-//   };
-
-//   return (
-//     <StyledBox>
-//       <form onSubmit={handleSubmit}>
-//         <Box sx={{ display: "flex", gap: 2 }}>
-//           <SelectSmall
-//             options={["1", "2", "3", "4"]}
-//             name="department"
-//             value={formData.department}
-//             onChange={(e) => handleChange("department")(e.target.value)}
-//           />
-//           <MultipleSelectChip
-//             value={formData.task}
-//             onChange={(value) => handleChange("task")(value)}
-//           />
-//         </Box>
-
-//         <ResponsiveDateTimePickers
-//           value={formData.dateToEndTask}
-//           onChange={(date) => handleChange("dateToEndTask")(date)}
-//         />
-
-//         <AddressForm
-//           value={formData.address}
-//           onChange={(value) => handleChange("address")(value)}
-//         />
-
-//         <TextField
-//           name="description"
-//           label="Description"
-//           variant="outlined"
-//           fullWidth
-//           margin="dense"
-//           value={formData.description}
-//           onChange={(e) => handleChange("description")(e.target.value)}
-//           required
-//         />
-
-//         <Button
-//           type="submit"
-//           variant="contained"
-//           color="primary"
-//           fullWidth
-//           sx={{ mt: 2 }}
-//         >
-//           Save Task
-//         </Button>
-//       </form>
-//     </StyledBox>
-//   );
-// };
-
-// export default TaskForm;
-
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import SelectSmall from "../smallComponent/SelectSmall";
 import { useCreateTask } from "../../service/reactQuery/reactMutation";
 import MultipleSelectChip from "../smallComponent/MultipleSelectChip";
@@ -117,9 +6,11 @@ import ResponsiveDateTimePickers from "../smallComponent/ResponsiveDateTimePicke
 import AddressForm from "../smallComponent/AddressForm";
 import styled from "styled-components";
 import { motion } from "framer-motion";
+import { useGetCurrentUser } from "../../service/reactQuery/reactQuery";
 
 const TaskForm = () => {
   const createSingleTask = useCreateTask();
+  const { data: currentUser } = useGetCurrentUser();
 
   const [formData, setFormData] = useState({
     department: "",
@@ -127,7 +18,12 @@ const TaskForm = () => {
     dateToEndTask: null,
     address: "",
     addition_info: "",
+    status: "planed",
   });
+
+  const takeAddress = useCallback((value) => {
+    setFormData((prev) => ({ ...prev, address: value }));
+  }, []);
 
   const handleChange = (field) => (value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -138,6 +34,7 @@ const TaskForm = () => {
 
     createSingleTask.mutate(formData);
     setFormData({
+      owner: currentUser._id,
       department: "",
       task: [],
       dateToEndTask: null,
@@ -148,17 +45,7 @@ const TaskForm = () => {
   };
 
   const takeDepartment = (value) => {
-    console.log("====================================");
-    console.log(value);
-    console.log("====================================");
     handleChange("department")(value);
-  };
-
-  const takeAddress = (value) => {
-    setFormData((prev) => ({ ...prev, address: value }));
-    console.log("====================================");
-    console.log(value);
-    console.log("====================================");
   };
 
   return (

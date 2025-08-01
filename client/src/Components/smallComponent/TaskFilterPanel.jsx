@@ -171,8 +171,9 @@ const PageNumber = styled.div`
 `;
 
 TaskFilterPanel.propTypes = {
-  onFilterChange: PropTypes.func.isRequired,
-  currentPage: PropTypes.number.isRequired,
-  totalPages: PropTypes.number.isRequired,
-  onPageChange: PropTypes.func.isRequired,
+  onFilterChange: PropTypes.func,
+  currentPage: PropTypes.number,
+  totalPages: PropTypes.number,
+  onPageChange: PropTypes.func,
+  children: PropTypes.node,
 };

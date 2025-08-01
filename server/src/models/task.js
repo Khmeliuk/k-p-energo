@@ -5,6 +5,10 @@ const TaskSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
+  status: {
+    type: [String],
+    required: [true, "status is required"],
+  },
   department: {
     type: Number,
     enum: [1, 2, 3, 4],
@@ -12,7 +16,7 @@ const TaskSchema = new mongoose.Schema({
     trim: true,
   },
   task: {
-    type: [String],
+    type: String,
     required: [true, "task is required"],
   },
   address: {

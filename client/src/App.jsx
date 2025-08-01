@@ -9,7 +9,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import AuthForm from "./Components/AuthForm";
 import TaskComponent from "./Components/TaskComponent";
 import ProtectedRoute from "../components/ProtectedRoute";
-import { refresh } from "./service/API/asios";
+import { refresh } from "./service/API/axios";
 
 const queryClient = new QueryClient();
 
@@ -23,7 +23,7 @@ function App() {
       .catch((err) => {
         console.error("Неавторизовано:", err);
       });
-  }, [queryClient]);
+  }, []);
   return (
     <StrictMode>
       <QueryClientProvider client={queryClient}>
