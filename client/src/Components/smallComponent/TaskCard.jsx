@@ -142,9 +142,6 @@ const TaskCard = ({
   const newdateToEndTask = dateConvector(dateToEndTask);
   const newCreateDate = dateConvector(createDate);
   const now = new Date();
-  console.log("====================================");
-  console.log(Date(newdateToEndTask));
-  console.log("====================================");
 
   const handleSwitchChange = () => {
     setIsEditable((prev) => !prev);
