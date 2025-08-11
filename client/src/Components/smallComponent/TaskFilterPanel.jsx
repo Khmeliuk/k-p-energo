@@ -12,6 +12,7 @@ const statuses = [
 
 const TaskFilterPanel = ({
   onFilterChange,
+  onViewChange,
   currentPage,
   totalPages,
   onPageChange,
@@ -19,6 +20,7 @@ const TaskFilterPanel = ({
 }) => {
   const [selectedStatuses, setSelectedStatuses] = useState([]);
   const [dateFilter, setDateFilter] = useState("all");
+  const [viewMode, setViewMode] = useState(false); // list | cards
 
   const toggleStatus = (value) => {
     setSelectedStatuses((prev) =>
@@ -34,6 +36,14 @@ const TaskFilterPanel = ({
 
   const applyFilters = () => {
     onFilterChange({ statuses: selectedStatuses, dateFilter });
+  };
+
+  const toggleView = () => {
+    setViewMode((prev) => {
+      const newValue = !prev;
+      if (onViewChange) onViewChange(newValue);
+      return newValue;
+    });
   };
 
   return (
@@ -61,8 +71,14 @@ const TaskFilterPanel = ({
         </Select>
       </Section>
 
+      <ViewToggleButton onClick={toggleView}>
+        {viewMode ? "Показати картками" : "Показати списком"}
+      </ViewToggleButton>
+
       <ApplyButton onClick={applyFilters}>Застосувати</ApplyButton>
+
       {children}
+
       <Pagination>
         <PageButton
           disabled={currentPage === 1}
@@ -86,6 +102,7 @@ const TaskFilterPanel = ({
 
 export default TaskFilterPanel;
 
+// ================= STYLES =================
 const Wrapper = styled.div`
   padding: 1rem;
   border-radius: 1rem;
@@ -139,9 +156,19 @@ const ApplyButton = styled.button`
   font-weight: bold;
   cursor: pointer;
   transition: background 0.2s;
+  margin-top: 0.5rem;
 
   &:hover {
     background: #303f9f;
+  }
+`;
+
+const ViewToggleButton = styled(ApplyButton)`
+  background: #009688;
+  margin-bottom: 0.5rem;
+
+  &:hover {
+    background: #00796b;
   }
 `;
 
@@ -172,6 +199,7 @@ const PageNumber = styled.div`
 
 TaskFilterPanel.propTypes = {
   onFilterChange: PropTypes.func,
+  onViewChange: PropTypes.func,
   currentPage: PropTypes.number,
   totalPages: PropTypes.number,
   onPageChange: PropTypes.func,

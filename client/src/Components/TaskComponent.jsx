@@ -7,10 +7,11 @@ import {
 } from "../service/reactQuery/reactQuery";
 import { useQueryClient } from "@tanstack/react-query";
 import { logout } from "../service/API/axios";
-import TaskCard from "./smallComponent/TaskCard";
 import CustomModal from "./Modal/Modal";
 import TaskForm from "./TaskForm.jsx/TaskForm";
 import TaskFilterPanel from "./smallComponent/TaskFilterPanel";
+import TaskboardCarts from "./smallComponent/TaskboardCarts";
+import TaskboardText from "./smallComponent/TaskboardText";
 
 const user = {
   name: "John Doe",
@@ -85,23 +86,9 @@ const MenuItem = styled.li`
   color: #020508;
 `;
 
-const TaskContainer = styled.div`
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem;
-  padding: 1rem;
-
-  @media (min-width: 640px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @media (min-width: 1024px) {
-    grid-template-columns: repeat(3, 1fr);
-  }
-`;
-
 const TaskComponent = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isCard, setIsCard] = useState(false);
   const { data: tasks, isLoading, isError, isFetched } = useAllTaskQuery();
   const { data: currentUser, isLoading: currentUserIsLoading } =
     useGetCurrentUser();
@@ -111,6 +98,9 @@ const TaskComponent = () => {
   console.log(currentUser);
   console.log("====================================");
   const toggleMenu = () => setMenuOpen((prev) => !prev);
+  const onViewChange = (data) => {
+    setIsCard(data);
+  };
 
   const handleMenuClick = async (option) => {
     setMenuOpen(false);
@@ -156,9 +146,8 @@ const TaskComponent = () => {
           </Dropdown>
         )}
       </Header>
-      <TaskFilterPanel>
-        {" "}
-        <TaskContainer>
+      <TaskFilterPanel onViewChange={onViewChange}>
+        {/* <TaskContainer>
           {isFetched &&
             tasks?.data?.map((task) => (
               <TaskCard
@@ -173,7 +162,12 @@ const TaskComponent = () => {
                 dateToEndTask={task?.dateToEndTask}
               />
             ))}
-        </TaskContainer>
+        </TaskContainer> */}
+        {isCard ? (
+          <TaskboardCarts tasks={tasks} isFetched={isFetched} />
+        ) : (
+          <TaskboardText tasks={tasks} isFetched={isFetched} />
+        )}
       </TaskFilterPanel>
 
       <CustomModal>
