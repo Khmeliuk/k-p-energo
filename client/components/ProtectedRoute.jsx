@@ -1,17 +1,8 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Navigate } from "react-router-dom";
-import { refresh } from "../src/service/API/axios";
+import { useRefreshQuery } from "../src/service/reactQuery/reactQuery";
 
 const ProtectedRoute = ({ children }) => {
-  const {
-    data: user,
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ["user"],
-    queryFn: refresh,
-    staleTime: 1000 * 60 * 5, // 5 хвилин
-  });
+  const { data: user, isLoading, isError } = useRefreshQuery();
 
   if (isLoading) return <div>Loading...</div>;
   if (!user || isError) {

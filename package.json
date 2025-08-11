@@ -1,0 +1,26 @@
+{
+  "name": "k-p-energo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev:server": "cd server && node -r dotenv/config index.js",
+    "dev:client": "cd client && vite"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Khmeliuk/k-p-energo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Khmeliuk/k-p-energo/issues"
+  },
+  "homepage": "https://github.com/Khmeliuk/k-p-energo#readme",
+  "dependencies": {
+    "concurrently": "^9.2.0"
+  }
+}

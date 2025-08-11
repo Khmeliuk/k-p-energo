@@ -18,6 +18,79 @@ const user = {
   avatarUrl: "https://i.pravatar.cc/300",
 };
 
+const TaskComponent = () => {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [isCard, setIsCard] = useState(false);
+  const { data: tasks, isLoading, isError, isFetched } = useAllTaskQuery();
+  const { data: currentUser, isLoading: currentUserIsLoading } =
+    useGetCurrentUser();
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const toggleMenu = () => setMenuOpen((prev) => !prev);
+  const onViewChange = (data) => {
+    setIsCard(data);
+  };
+
+  const handleMenuClick = async (option) => {
+    setMenuOpen(false);
+    if (option === "Logout") {
+      try {
+        await logout();
+        queryClient.clear();
+        navigate("/auth");
+      } catch (error) {
+        console.error("Logout error:", error);
+      }
+    }
+  };
+
+  if (isLoading && currentUserIsLoading) return <div>Loading tasks...</div>;
+  if (isError) return <div>Error loading tasks.</div>;
+
+  return (
+    <Wrapper>
+      <Header>
+        <Title>My Application</Title>
+        <UserInfo onClick={toggleMenu}>
+          <span>
+            {currentUser?.data?.name + " " + currentUser?.data?.lastName}
+          </span>
+          <Avatar src={user.avatarUrl} />
+        </UserInfo>
+        {menuOpen && (
+          <Dropdown>
+            <MenuItem onClick={() => handleMenuClick("Profile")}>
+              Profile
+            </MenuItem>
+            <MenuItem onClick={() => handleMenuClick("My account")}>
+              My account
+            </MenuItem>
+            <MenuItem onClick={() => handleMenuClick("Logout")}>
+              Logout
+            </MenuItem>
+          </Dropdown>
+        )}
+      </Header>
+      <TaskFilterPanel onViewChange={onViewChange}>
+        {isFetched && (
+          <>
+            {" "}
+            {isCard ? (
+              <TaskboardCarts tasks={tasks} isFetched={isFetched} />
+            ) : (
+              <TaskboardText tasks={tasks} isFetched={isFetched} />
+            )}
+          </>
+        )}
+      </TaskFilterPanel>
+
+      <CustomModal>
+        <TaskForm />
+      </CustomModal>
+    </Wrapper>
+  );
+};
+
 const fadeIn = keyframes`
   from {
     opacity: 0;
@@ -85,96 +158,5 @@ const Dropdown = styled.ul`
 const MenuItem = styled.li`
   color: #020508;
 `;
-
-const TaskComponent = () => {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [isCard, setIsCard] = useState(false);
-  const { data: tasks, isLoading, isError, isFetched } = useAllTaskQuery();
-  const { data: currentUser, isLoading: currentUserIsLoading } =
-    useGetCurrentUser();
-  const queryClient = useQueryClient();
-  const navigate = useNavigate();
-  console.log("====================================");
-  console.log(currentUser);
-  console.log("====================================");
-  const toggleMenu = () => setMenuOpen((prev) => !prev);
-  const onViewChange = (data) => {
-    setIsCard(data);
-  };
-
-  const handleMenuClick = async (option) => {
-    setMenuOpen(false);
-    if (option === "Logout") {
-      try {
-        await logout();
-        queryClient.clear();
-        navigate("/auth");
-      } catch (error) {
-        console.error("Logout error:", error);
-      }
-    }
-  };
-
-  console.log("====================================");
-  console.log(currentUser);
-  console.log("====================================");
-
-  if (isLoading && currentUserIsLoading) return <div>Loading tasks...</div>;
-  if (isError) return <div>Error loading tasks.</div>;
-
-  return (
-    <Wrapper>
-      <Header>
-        <Title>My Application</Title>
-        <UserInfo onClick={toggleMenu}>
-          <span>
-            {currentUser?.data?.name + " " + currentUser?.data?.lastName}
-          </span>
-          <Avatar src={user.avatarUrl} />
-        </UserInfo>
-        {menuOpen && (
-          <Dropdown>
-            <MenuItem onClick={() => handleMenuClick("Profile")}>
-              Profile
-            </MenuItem>
-            <MenuItem onClick={() => handleMenuClick("My account")}>
-              My account
-            </MenuItem>
-            <MenuItem onClick={() => handleMenuClick("Logout")}>
-              Logout
-            </MenuItem>
-          </Dropdown>
-        )}
-      </Header>
-      <TaskFilterPanel onViewChange={onViewChange}>
-        {/* <TaskContainer>
-          {isFetched &&
-            tasks?.data?.map((task) => (
-              <TaskCard
-                key={task._id}
-                owner={task.owner}
-                department={task.department}
-                address={task.address}
-                date={task.date}
-                tasks={task.task}
-                comment={task?.comment}
-                createDate={task?.createDate}
-                dateToEndTask={task?.dateToEndTask}
-              />
-            ))}
-        </TaskContainer> */}
-        {isCard ? (
-          <TaskboardCarts tasks={tasks} isFetched={isFetched} />
-        ) : (
-          <TaskboardText tasks={tasks} isFetched={isFetched} />
-        )}
-      </TaskFilterPanel>
-
-      <CustomModal>
-        <TaskForm />
-      </CustomModal>
-    </Wrapper>
-  );
-};
 
 export default TaskComponent;

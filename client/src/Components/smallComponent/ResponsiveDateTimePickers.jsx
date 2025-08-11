@@ -22,7 +22,7 @@ export default function ResponsiveDateTimePickers({ value, onChange }) {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DemoContainer components={["MobileDateTimePicker"]}>
-        <DemoItem label="Дата та час">
+        <DemoItem>
           <MobileDateTimePicker
             value={value}
             onChange={onChange}

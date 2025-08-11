@@ -34,10 +34,7 @@ export const getTaskHandler = async function (req, reply) {
 
 export const addTaskHandler = async function (req, reply) {
   try {
-    const newTask = { ...req.body, owner: req.user._id };
-    console.log("====================================");
-    console.log("addTaskHandler");
-    console.log("====================================");
+    const newTask = { owner: req.user._id, status: "виконується", ...req.body };
     const addTask = await createOnTask(newTask);
     reply.status(201).send(addTask);
   } catch (error) {

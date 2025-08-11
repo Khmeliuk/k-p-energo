@@ -3,9 +3,9 @@ import styled from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
 import PropTypes from "prop-types";
 
-const names = ["Відділ 1", "Відділ 2", "Відділ 3", "Відділ 4"];
+const MAX_VISIBLE_CHIPS = 3;
 
-const MultipleSelectChip = ({ name, value = [], onChange }) => {
+const MultipleSelectChip = ({ name, value = [], onChange, options }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleToggleOption = (option) => {
@@ -15,17 +15,36 @@ const MultipleSelectChip = ({ name, value = [], onChange }) => {
     onChange(newValue);
   };
 
+  const visibleChips = value.slice(0, MAX_VISIBLE_CHIPS);
+  const hiddenCount = value.length - MAX_VISIBLE_CHIPS;
+
   return (
     <Wrapper>
-      <Label>{name}</Label>
+      {/* <Label>{name}</Label> */}
       <SelectBox onClick={() => setIsOpen((prev) => !prev)}>
         <SelectedChips>
           {value.length > 0 ? (
-            value.map((item) => (
-              <Chip key={item} as={motion.span} layout>
-                {item}
-              </Chip>
-            ))
+            <>
+              {visibleChips.map((item) => (
+                <Chip key={item} as={motion.span} layout>
+                  {item}
+                </Chip>
+              ))}
+              <AnimatePresence>
+                {hiddenCount > 0 && (
+                  <MoreChips
+                    as={motion.span}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ duration: 0.25 }}
+                    key="more-chips"
+                  >
+                    +{hiddenCount}
+                  </MoreChips>
+                )}
+              </AnimatePresence>
+            </>
           ) : (
             <Placeholder>Оберіть задачі</Placeholder>
           )}
@@ -42,7 +61,7 @@ const MultipleSelectChip = ({ name, value = [], onChange }) => {
             exit={{ opacity: 0, y: -5 }}
             transition={{ duration: 0.2 }}
           >
-            {names.map((option) => (
+            {options.map((option) => (
               <OptionItem
                 key={option}
                 onClick={() => handleToggleOption(option)}
@@ -69,23 +88,16 @@ MultipleSelectChip.propTypes = {
 
 export default MultipleSelectChip;
 
-// ✅ Styled Components
+// Styled Components
 const Wrapper = styled.div`
   position: relative;
   margin-bottom: 1rem;
 `;
 
-const Label = styled.label`
-  display: block;
-  margin-bottom: 6px;
-  font-weight: 600;
-  font-size: 0.95rem;
-`;
-
 const SelectBox = styled.div`
   max-width: 90%;
   width: 90%;
-  /* min-height: 48px; */
+  min-height: 48px;
   padding: 0.6rem 1rem;
   border: 1px solid #ccc;
   border-radius: 0.75rem;
@@ -94,6 +106,7 @@ const SelectBox = styled.div`
   justify-content: space-between;
   align-items: center;
   cursor: pointer;
+  overflow: hidden;
 
   &:hover {
     border-color: #4a90e2;
@@ -102,8 +115,10 @@ const SelectBox = styled.div`
 
 const SelectedChips = styled.div`
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 6px;
+  max-width: 100%;
+  overflow: hidden;
 `;
 
 const Chip = styled.span`
@@ -113,6 +128,19 @@ const Chip = styled.span`
   border-radius: 12px;
   font-size: 0.85rem;
   font-weight: 500;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+`;
+
+const MoreChips = styled(motion.span)`
+  background: #c5cae9;
+  color: #303f9f;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
 `;
 
 const Placeholder = styled.span`
@@ -135,7 +163,6 @@ const OptionsList = styled.ul`
   border-radius: 0.75rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   z-index: 10;
-  overflow: hidden;
   max-height: 200px;
   overflow-y: auto;
   list-style: none;

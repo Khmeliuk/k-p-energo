@@ -6,7 +6,8 @@ const TaskSchema = new mongoose.Schema({
     ref: "User",
   },
   status: {
-    type: [String],
+    type: String,
+    enum: ["виконується", "виконанно", "скасовано"],
     required: [true, "status is required"],
   },
   department: {
@@ -16,7 +17,8 @@ const TaskSchema = new mongoose.Schema({
     trim: true,
   },
   task: {
-    type: String,
+    type: [String],
+    enum: ["Задача 1", "Задача 2", "Задача 3", "Задача 4"],
     required: [true, "task is required"],
   },
   address: {

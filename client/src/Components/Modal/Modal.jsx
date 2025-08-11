@@ -3,18 +3,35 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   Button,
 } from "@mui/material";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 
-//styled
 const StyledDialog = styled(Dialog)`
   & .MuiPaper-root {
-    height: inherit;
+    width: 500px;
+    height: 600px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    border-radius: 12px;
+
+    /* Адаптивність для мобілок */
+    @media (max-width: 600px) {
+      width: 95vw;
+      height: 90vh;
+      margin: 0 10px;
+      border-radius: 8px;
+    }
   }
+`;
+
+const StyledDialogContent = styled(DialogContent)`
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding-right: 16px;
 `;
 
 const CustomModal = ({ children }) => {
@@ -35,11 +52,7 @@ const CustomModal = ({ children }) => {
       </Button>
       <StyledDialog open={open} onClose={handleClose}>
         <DialogTitle>Add New Task</DialogTitle>
-        <DialogContent>
-          <DialogContentText></DialogContentText>
-          {children}
-        </DialogContent>
-
+        <StyledDialogContent dividers>{children}</StyledDialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
             Close
@@ -50,6 +63,8 @@ const CustomModal = ({ children }) => {
   );
 };
 
-CustomModal.propTypes = { children: PropTypes.node.isRequired };
+CustomModal.propTypes = {
+  children: PropTypes.node.isRequired,
+};
 
 export default CustomModal;

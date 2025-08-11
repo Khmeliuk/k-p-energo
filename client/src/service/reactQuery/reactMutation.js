@@ -7,9 +7,6 @@ export const useAuthMutation = function (fetchfunction) {
   return useMutation({
     mutationFn: fetchfunction,
     onSuccess: (data) => {
-      console.log("====================================");
-      console.log(data, "useMutation");
-      console.log("====================================");
       queryClient.setQueryData(["user"], data);
     },
     onError: (error) => {

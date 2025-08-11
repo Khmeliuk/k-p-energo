@@ -5,7 +5,9 @@ import dotenv from "dotenv";
 dotenv.config();
 
 mongoose.Promise = global.Promise;
-
+console.log("====================================");
+console.log(process.env.MONGODB_URL);
+console.log("====================================");
 async function mongoosePlugin(fastify) {
   try {
     await mongoose.connect(process.env.MONGODB_URL, {

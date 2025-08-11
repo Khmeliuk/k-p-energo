@@ -36,6 +36,7 @@ const AddressForm = ({ onChange }) => {
   const [room, setRoom] = useState("");
   const [fullstreet, setfullstreet] = useState([]);
   const [fullAddress, setFullAddress] = useState("");
+  const [addAddress, setAddAddress] = useState(1);
 
   const createFullAddress = useCallback(() => {
     const all = [cityName, ...fullstreet].filter(Boolean).join(", ") + ".";
@@ -47,8 +48,13 @@ const AddressForm = ({ onChange }) => {
   }, [cityName, fullstreet]);
 
   useEffect(() => {
-    createFullAddress();
-  }, [cityName, fullstreet, createFullAddress]);
+    if (cityName) {
+      console.log("====================================");
+      console.log("useEffect");
+      console.log("====================================");
+      createFullAddress();
+    }
+  }, [addAddress]);
 
   // Зберігаємо місто (bounds для вулиць)
   const getCityLocation = (place) => {
@@ -88,6 +94,10 @@ const AddressForm = ({ onChange }) => {
     setStreet("");
     setBlock("");
     setRoom("");
+    console.log("====================================");
+    console.log("addaddress");
+    console.log("====================================");
+    setAddAddress((pref) => (pref += 1));
   };
 
   return (

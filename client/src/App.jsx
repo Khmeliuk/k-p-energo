@@ -9,21 +9,10 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import AuthForm from "./Components/AuthForm";
 import TaskComponent from "./Components/TaskComponent";
 import ProtectedRoute from "../components/ProtectedRoute";
-import { refresh } from "./service/API/axios";
 
 const queryClient = new QueryClient();
 
 function App() {
-  useEffect(() => {
-    queryClient
-      .fetchQuery({
-        queryKey: ["user"],
-        queryFn: refresh,
-      })
-      .catch((err) => {
-        console.error("Неавторизовано:", err);
-      });
-  }, []);
   return (
     <StrictMode>
       <QueryClientProvider client={queryClient}>
