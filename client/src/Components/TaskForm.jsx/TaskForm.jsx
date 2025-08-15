@@ -128,7 +128,7 @@ const FormContainer = styled(motion.div)`
   width: 100%;
   height: 100%;
   max-width: 500px;
-  margin: auto;
+  /* margin: auto; */
   /* padding: 1.2rem; */
   /* background: #ffffff; */
   border-radius: 1rem;

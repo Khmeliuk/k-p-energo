@@ -9,6 +9,7 @@ import decoratorsPlugin from "./decorators/decorators.js";
 import fastifyMultipart from "@fastify/multipart";
 import fastifyCors from "@fastify/cors";
 import "dotenv/config";
+import statusRouter from "./routers/statusRouter.js";
 
 const fastify = Fastify({ logger: true });
 
@@ -56,6 +57,7 @@ fastify.register(
     fastify.register(authorization, { prefix: "/auth" });
     fastify.register(userRouter, { prefix: "/user" });
     fastify.register(taskRouter, { prefix: "/task" });
+    fastify.register(statusRouter, { prefix: "/status" });
   },
   { prefix: "/api/v1" }
 );

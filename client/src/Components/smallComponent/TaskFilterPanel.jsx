@@ -1,12 +1,11 @@
 import PropTypes from "prop-types";
 import { useState } from "react";
 import styled from "styled-components";
+import { useAllTaskQuery } from "../../service/reactQuery/reactQuery";
 
 const statuses = [
   { label: "Виконані", value: "completed" },
   { label: "Не виконані", value: "incomplete" },
-  { label: "Прострочені", value: "overdue" },
-  { label: "Виконуються", value: "in_progress" },
   { label: "Заплановані", value: "planned" },
 ];
 
@@ -21,6 +20,8 @@ const TaskFilterPanel = ({
   const [selectedStatuses, setSelectedStatuses] = useState([]);
   const [dateFilter, setDateFilter] = useState("all");
   const [viewMode, setViewMode] = useState(false); // list | cards
+
+  const { data: stateCount, isLoading } = useAllTaskQuery();
 
   const toggleStatus = (value) => {
     setSelectedStatuses((prev) =>
@@ -46,21 +47,27 @@ const TaskFilterPanel = ({
     });
   };
 
+  console.log("====================================");
+  console.log(stateCount, "statuscount");
+  console.log("====================================");
+
   return (
     <Wrapper>
       <Section>
         <Label>Статуси задач:</Label>
-        <StatusList>
-          {statuses.map(({ label, value }) => (
-            <StatusButton
-              key={value}
-              selected={selectedStatuses.includes(value)}
-              onClick={() => toggleStatus(value)}
-            >
-              {label}
-            </StatusButton>
-          ))}
-        </StatusList>
+        {!isLoading && (
+          <StatusList>
+            {statuses.map(({ label, value }) => (
+              <StatusButton
+                key={value}
+                selected={selectedStatuses.includes(value)}
+                onClick={() => toggleStatus(value)}
+              >
+                {label}: {stateCount.data.statusCount[value] || 0}
+              </StatusButton>
+            ))}
+          </StatusList>
+        )}
       </Section>
 
       <Section>

@@ -1,9 +1,9 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { login, registration } from "../service/API/axios";
-import { useAuthMutation } from "../service/reactQuery/reactMutation";
-import SelectSmall from "./smallComponent/SelectSmall";
-import { Copyright } from "./muicomponent/Typography";
+import { login, registration } from "../../service/API/axios";
+import { useAuthMutation } from "../../service/reactQuery/reactMutation";
+import SelectSmall from "../smallComponent/SelectSmall";
+import { Copyright } from "../muicomponent/Typography";
 import { useState } from "react";
 import {
   ErrorMessage,
@@ -14,7 +14,7 @@ import {
   Title,
   Toggle,
   Wrapper,
-} from "../styled/AuthFormStyled";
+} from "../../styled/AuthFormStyled";
 
 const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(false);

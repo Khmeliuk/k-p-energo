@@ -1,4 +1,3 @@
-// import { TextField, Switch, FormControlLabel, Box } from "@mui/material";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { dateConvector } from "../../service/methods/dateConvector";
@@ -7,7 +6,6 @@ import {
   TextField,
   FormControlLabel,
   Switch,
-  Box,
   IconButton,
   Tooltip,
 } from "@mui/material";
@@ -17,15 +15,6 @@ import {
   PendingActions,
   HourglassBottom,
 } from "@mui/icons-material";
-
-// const CardContainer = styled(Box)`
-//   border: 1px solid #ddd;
-//   border-radius: 8px;
-//   padding: 16px;
-//   max-width: 400px;
-//   margin: 20px auto;
-//   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-// `;
 
 const CardContainer = styled.div`
   position: relative;
@@ -41,92 +30,6 @@ const StatusIcon = styled.div`
   top: 8px;
   right: 8px;
 `;
-
-// const TaskCard = ({
-//   owner,
-//   department,
-//   address,
-//   tasks,
-//   dateToEndTask,
-//   createDate,
-// }) => {
-//   const [isEditable, setIsEditable] = useState(false);
-
-//   const handleSwitchChange = () => {
-//     setIsEditable(!isEditable);
-//   };
-//   const newdateToEndTask = dateConvector(dateToEndTask);
-//   const newCreateDate = dateConvector(createDate);
-
-//   return (
-//     <CardContainer>
-//       <FormControlLabel
-//         control={<Switch checked={isEditable} onChange={handleSwitchChange} />}
-//         label="Edit Mode"
-//       />
-//       <TextField
-//         label="Owner"
-//         variant="outlined"
-//         fullWidth
-//         margin="normal"
-//         InputProps={{
-//           readOnly: !isEditable,
-//         }}
-//         defaultValue={`${owner.name} ${owner.lastName}`}
-//       />
-//       <TextField
-//         label="Department"
-//         variant="outlined"
-//         fullWidth
-//         margin="normal"
-//         InputProps={{
-//           readOnly: !isEditable,
-//         }}
-//         defaultValue={department}
-//       />
-//       <TextField
-//         label="Task"
-//         variant="outlined"
-//         fullWidth
-//         margin="normal"
-//         InputProps={{
-//           readOnly: !isEditable,
-//         }}
-//         defaultValue={tasks}
-//       />
-//       <TextField
-//         label="Address"
-//         variant="outlined"
-//         fullWidth
-//         margin="normal"
-//         InputProps={{
-//           readOnly: !isEditable,
-//         }}
-//         defaultValue={address}
-//       />
-//       <TextField
-//         label="createDate"
-//         variant="outlined"
-//         fullWidth
-//         margin="normal"
-//         InputProps={{
-//           readOnly: !isEditable,
-//         }}
-//         defaultValue={newCreateDate}
-//       />
-//       <TextField
-//         label="dateToEndTask"
-//         variant="outlined"
-//         fullWidth
-//         margin="normal"
-//         InputProps={{
-//           readOnly: !isEditable,
-//         }}
-//         defaultValue={newdateToEndTask}
-//       />
-//     </CardContainer>
-//   );
-// };
 
 const TaskCard = ({
   owner,
@@ -279,9 +182,9 @@ TaskCard.propTypes = {
     name: PropTypes.string.isRequired,
     lastName: PropTypes.string.isRequired,
   }),
-  department: PropTypes.string,
+  department: PropTypes.number,
   address: PropTypes.string,
   tasks: PropTypes.arrayOf(PropTypes.string).isRequired,
-  dateToEndTask: PropTypes.string.isRequired,
+  dateToEndTask: PropTypes.string,
   createDate: PropTypes.string.isRequired,
 };

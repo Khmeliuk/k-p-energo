@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getTasks, refresh } from "../API/axios";
+import { getStatus, getTasks, refresh } from "../API/axios";
 
 export const useAllTaskQuery = () => {
   return useQuery({
@@ -13,6 +13,13 @@ export const useGetCurrentUser = () => {
   return useQuery({
     queryKey: ["user"],
     enabled: false,
+  });
+};
+
+export const useGetStatus = () => {
+  return useQuery({
+    queryKey: ["status"],
+    queryFn: getStatus,
   });
 };
 

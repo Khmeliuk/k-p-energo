@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import {
   deleteOneTask,
   findAllTask,
@@ -9,11 +10,33 @@ import {
 
 export const getAllTaskHandler = async function (req, reply) {
   try {
-    const task = await findAllTaskYourTask(req.user._id);
-    console.log("====================================");
-    console.log(task);
-    console.log("====================================");
-    reply.status(200).send(task);
+    const userID = new mongoose.Types.ObjectId(req.user._id);
+
+    const tasks = await findAllTaskYourTask(req.user._id);
+    tasks.map((el) => {
+      if (el.status === "completed") {
+        return;
+      }
+      if (Date.now() > new Date(el.dateToEndTask)) {
+        el.status = "incomplete";
+        return;
+      }
+      if (Date.now() <= new Date(el.dateToEndTask)) {
+        el.status = "planned";
+
+        return;
+      }
+      if (!el.status) {
+        el.status = "no status";
+        return;
+      }
+    });
+    const statusCount = tasks.reduce((acc, task) => {
+      const status = task.status || "none"; // якщо статус відсутній
+      acc[status] = (acc[status] || 0) + 1;
+      return acc;
+    }, {});
+    reply.status(200).send({ tasks: tasks, statusCount: statusCount });
   } catch (error) {
     reply.status(404).send(error.message);
   }
@@ -23,9 +46,6 @@ export const getTaskHandler = async function (req, reply) {
   try {
     const params = req.params.id;
     const task = await findOneTask(params);
-    console.log("====================================");
-    console.log(task);
-    console.log("====================================");
     reply.status(200).send(task);
   } catch (error) {
     reply.status(404).send(error);

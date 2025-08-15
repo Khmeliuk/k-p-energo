@@ -10,7 +10,7 @@ const GoogleAutocomplete = ({
   type = "",
   label = "Адреса",
   getCityLocation,
-  cityBounds,
+  bounds,
   onPlaceSelect,
 }) => {
   const [autocomplete, setAutocomplete] = useState(null);
@@ -59,12 +59,14 @@ const GoogleAutocomplete = ({
     }
   };
 
+  console.log("====================================");
+  console.log(bounds, "boundsGoogle");
+  console.log("====================================");
+
   const options = {
     types: [type === "city" ? "(cities)" : "address"],
     componentRestrictions: { country: "ua" },
-    ...(type === "route" && cityBounds
-      ? { bounds: cityBounds, strictBounds: true }
-      : {}),
+    ...{ bounds: bounds, strictBounds: true },
   };
 
   return (
@@ -91,7 +93,7 @@ GoogleAutocomplete.propTypes = {
   type: PropTypes.oneOf(["city", "route"]),
   label: PropTypes.string,
   getCityLocation: PropTypes.func,
-  cityBounds: PropTypes.object,
+  bounds: PropTypes.object,
   onPlaceSelect: PropTypes.func,
 };
 

@@ -38,6 +38,13 @@ const AddressForm = ({ onChange }) => {
   const [fullAddress, setFullAddress] = useState("");
   const [addAddress, setAddAddress] = useState(1);
 
+  const cityBounds = {
+    north: 48.73449779732803,
+    south: 48.64795237063812,
+    east: 26.61678308052667,
+    west: 26.54322606905152,
+  };
+
   const createFullAddress = useCallback(() => {
     const all = [cityName, ...fullstreet].filter(Boolean).join(", ") + ".";
     console.log("====================================");
@@ -49,9 +56,6 @@ const AddressForm = ({ onChange }) => {
 
   useEffect(() => {
     if (cityName) {
-      console.log("====================================");
-      console.log("useEffect");
-      console.log("====================================");
       createFullAddress();
     }
   }, [addAddress]);
@@ -94,9 +98,6 @@ const AddressForm = ({ onChange }) => {
     setStreet("");
     setBlock("");
     setRoom("");
-    console.log("====================================");
-    console.log("addaddress");
-    console.log("====================================");
     setAddAddress((pref) => (pref += 1));
   };
 
@@ -104,6 +105,7 @@ const AddressForm = ({ onChange }) => {
     <AddressContainer>
       <GoogleAutocomplete
         type="city"
+        bounds={cityBounds}
         label="Населений пункт"
         getCityLocation={getCityLocation}
       />
@@ -114,7 +116,7 @@ const AddressForm = ({ onChange }) => {
             <GoogleAutocomplete
               type="route"
               label="Вулиця"
-              cityBounds={locality}
+              bounds={locality}
               onPlaceSelect={handleStreetSelect}
               inputValue={street}
             />

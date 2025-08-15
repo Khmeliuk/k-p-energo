@@ -104,7 +104,7 @@ export default function TaskboardText({ tasks, isFetched }) {
   return (
     isFetched && (
       <TaskList>
-        {tasks?.data?.map((task, index) => (
+        {tasks?.data?.tasks?.map((task, index) => (
           <TaskItem key={index} status={task.status}>
             <div>
               <TaskHeader>

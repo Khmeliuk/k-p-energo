@@ -32,8 +32,7 @@ export const registration = async (formData) => {
 
 export const getTasks = async () => {
   try {
-    const data = await axiosInstance.get("task");
-    return data;
+    return await axiosInstance.get("task");
   } catch (error) {
     console.log("getTasks", error.message);
   }
@@ -41,14 +40,9 @@ export const getTasks = async () => {
 
 export const createTask = async (task) => {
   try {
-    console.log("====================================");
-    console.log(task, "task");
-    console.log("====================================");
     return await axiosInstance.post("task", task);
   } catch (error) {
-    console.log("====================================");
-    console.log(error);
-    console.log("====================================");
+    return error;
   }
 };
 
@@ -68,4 +62,9 @@ export const refresh = async () => {
     console.error("Refresh error:", error);
     throw error; // або поверни null / false, якщо не хочеш кидати
   }
+};
+
+export const getStatus = async () => {
+  const status = await axiosInstance.get("/status/getAllStatus");
+  return status;
 };

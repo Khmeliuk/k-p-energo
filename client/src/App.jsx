@@ -2,11 +2,10 @@ import { StrictMode, useEffect } from "react";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-
+import AuthForm from "./Components/views/AuthForm";
 import { GlobalStyles } from "./styled/globalStyle";
 import MainPage from "./Components/views/MainPage";
 import { Navigate, Route, Routes } from "react-router-dom";
-import AuthForm from "./Components/AuthForm";
 import TaskComponent from "./Components/TaskComponent";
 import ProtectedRoute from "../components/ProtectedRoute";
 
