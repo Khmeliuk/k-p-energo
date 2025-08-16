@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import {
   useAllTaskQuery,
   useGetCurrentUser,
-  useGetStatus,
 } from "../service/reactQuery/reactQuery";
 import { useQueryClient } from "@tanstack/react-query";
 import { logout } from "../service/API/axios";
@@ -25,7 +24,6 @@ const TaskComponent = () => {
   const { data: tasks, isLoading, isError, isFetched } = useAllTaskQuery();
   const { data: currentUser, isLoading: currentUserIsLoading } =
     useGetCurrentUser();
-  const { data: status } = useGetStatus();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const toggleMenu = () => setMenuOpen((prev) => !prev);
