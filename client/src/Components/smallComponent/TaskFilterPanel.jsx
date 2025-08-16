@@ -19,7 +19,7 @@ const TaskFilterPanel = ({
 }) => {
   const [selectedStatuses, setSelectedStatuses] = useState([]);
   const [dateFilter, setDateFilter] = useState("all");
-  const [viewMode, setViewMode] = useState(false); // list | cards
+  const [viewMode, setViewMode] = useState(false);
 
   const { data: stateCount, isLoading } = useAllTaskQuery();
 
@@ -36,6 +36,9 @@ const TaskFilterPanel = ({
   };
 
   const applyFilters = () => {
+    console.log("====================================");
+    console.log(selectedStatuses);
+    console.log("====================================");
     onFilterChange({ statuses: selectedStatuses, dateFilter });
   };
 
@@ -46,10 +49,6 @@ const TaskFilterPanel = ({
       return newValue;
     });
   };
-
-  console.log("====================================");
-  console.log(stateCount, "statuscount");
-  console.log("====================================");
 
   return (
     <Wrapper>

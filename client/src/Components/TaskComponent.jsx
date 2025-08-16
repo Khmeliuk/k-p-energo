@@ -33,10 +33,6 @@ const TaskComponent = () => {
     setIsCard(data);
   };
 
-  console.log("====================================");
-  console.log(status, "status");
-  console.log("====================================");
-
   const handleMenuClick = async (option) => {
     setMenuOpen(false);
     if (option === "Logout") {

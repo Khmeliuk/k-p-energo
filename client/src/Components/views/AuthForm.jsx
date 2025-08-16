@@ -4,34 +4,90 @@ import { login, registration } from "../../service/API/axios";
 import { useAuthMutation } from "../../service/reactQuery/reactMutation";
 import SelectSmall from "../smallComponent/SelectSmall";
 import { Copyright } from "../muicomponent/Typography";
-import { useState } from "react";
-import {
-  ErrorMessage,
-  FormWrapper,
-  Icon,
-  Input,
-  SubmitButton,
-  Title,
-  Toggle,
-  Wrapper,
-} from "../../styled/AuthFormStyled";
+import { useState, useEffect } from "react";
+import styled, { css } from "styled-components";
 
-const AuthForm = () => {
+// Styled Components
+const registrationFormField = {
+  name: "",
+  lastName: "",
+  role: "",
+  email: "",
+  password: "",
+  confirmPassword: "",
+};
+
+export default function AuthForm() {
   const [isLogin, setIsLogin] = useState(false);
+  const [formValues, setFormValues] = useState({ ...registrationFormField });
+  const [errors, setErrors] = useState({});
   const loginMutation = useAuthMutation(login);
   const registrationMutation = useAuthMutation(registration);
   const navigate = useNavigate();
 
   const toggleForm = () => {
+    setFormValues({
+      ...registrationFormField,
+    });
     setIsLogin(!isLogin);
+    setErrors({});
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormValues((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: "" }));
+  };
+
+  useEffect(() => {
+    const backendError =
+      loginMutation.error?.response?.data?.errors ||
+      registrationMutation.error?.response?.data?.errors;
+
+    if (backendError && typeof backendError === "object") {
+      setErrors(backendError);
+    } else if (
+      loginMutation.error?.response?.data?.message ||
+      registrationMutation.error?.response?.data?.message
+    ) {
+      setErrors({
+        general:
+          loginMutation.error?.response?.data?.message ||
+          registrationMutation.error?.response?.data?.message,
+      });
+    }
+  }, [loginMutation.error, registrationMutation.error]);
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!isLogin) {
+      if (!formValues.name.trim()) newErrors.name = "Required";
+      if (!formValues.lastName.trim()) newErrors.lastName = "Required";
+      if (!formValues.role) newErrors.role = "Required";
+      if (formValues.password !== formValues.confirmPassword) {
+        newErrors.confirmPassword = "No match";
+      }
+    }
+
+    if (!formValues.email.trim()) newErrors.email = "Required";
+    if (!formValues.password.trim()) newErrors.password = "Required";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const values = Object.fromEntries(formData.entries());
+    if (!validateForm()) return;
+
+    const payload = isLogin
+      ? { email: formValues.email, password: formValues.password }
+      : formValues;
+
     const mutation = isLogin ? loginMutation : registrationMutation;
-    mutation.mutate(values, {
+
+    mutation.mutate(payload, {
       onSuccess: () => {
         navigate("/task");
       },
@@ -48,33 +104,93 @@ const AuthForm = () => {
       >
         <Icon>🔒</Icon>
         <Title>{isLogin ? "Login" : "Register"}</Title>
+
         <form onSubmit={handleSubmit} autoComplete="off">
           {!isLogin && (
             <>
-              <Input name="name" placeholder="Name" required />
-              <Input name="lastName" placeholder="Last Name" required />
+              <InputWrapper>
+                <Input
+                  name="name"
+                  placeholder="Name"
+                  value={formValues.name}
+                  onChange={handleChange}
+                  hasError={!!errors.name}
+                />
+                {errors.name && <ErrorInside>{errors.name}</ErrorInside>}
+              </InputWrapper>
+
+              <InputWrapper>
+                <Input
+                  name="lastName"
+                  placeholder="Last Name"
+                  value={formValues.lastName}
+                  onChange={handleChange}
+                  hasError={!!errors.lastName}
+                />
+                {errors.lastName && (
+                  <ErrorInside>{errors.lastName}</ErrorInside>
+                )}
+              </InputWrapper>
+
               <SelectSmall
                 name="role"
+                value={formValues.role}
+                onChange={(value) =>
+                  setFormValues((prev) => ({ ...prev, role: value }))
+                }
                 options={["user", "super user", "admin"]}
               />
+              {errors.role && (
+                <ErrorInside style={{ position: "static" }}>
+                  {errors.role}
+                </ErrorInside>
+              )}
             </>
           )}
-          <Input name="email" placeholder="Email" required />
-          <Input
-            name="password"
-            placeholder="Password"
-            type="password"
-            required
-          />
-          {!isLogin && (
+
+          <InputWrapper>
             <Input
-              name="confirmPassword"
-              placeholder="Confirm Password"
-              type="password"
-              required
+              name="email"
+              placeholder="Email"
+              value={formValues.email}
+              onChange={handleChange}
+              hasError={!!errors.email}
             />
+            {errors.email && <ErrorInside>{errors.email}</ErrorInside>}
+          </InputWrapper>
+
+          <InputWrapper>
+            <Input
+              name="password"
+              placeholder="Password"
+              type="password"
+              value={formValues.password}
+              onChange={handleChange}
+              hasError={!!errors.password}
+            />
+            {errors.password && <ErrorInside>{errors.password}</ErrorInside>}
+          </InputWrapper>
+
+          {!isLogin && (
+            <InputWrapper>
+              <Input
+                name="confirmPassword"
+                placeholder="Confirm Password"
+                type="password"
+                value={formValues.confirmPassword}
+                onChange={handleChange}
+                hasError={!!errors.confirmPassword}
+              />
+              {errors.confirmPassword && (
+                <ErrorInside>{errors.confirmPassword}</ErrorInside>
+              )}
+            </InputWrapper>
           )}
-          <SubmitButton type="submit">
+
+          <SubmitButton
+            type="submit"
+            disabled={loginMutation.isPending || registrationMutation.isPending}
+          >
             {isLogin ? "Login" : "Register"}
           </SubmitButton>
 
@@ -86,95 +202,170 @@ const AuthForm = () => {
             </ErrorMessage>
           )}
 
-          <Toggle onClick={toggleForm}>
+          {errors.general && (
+            <ErrorInside style={{ position: "static", display: "block" }}>
+              {errors.general}
+            </ErrorInside>
+          )}
+
+          <Toggle type="button" onClick={toggleForm}>
             {isLogin
               ? "Don't have an account? Register"
               : "Already have an account? Login"}
           </Toggle>
         </form>
+
         <Copyright />
       </FormWrapper>
     </Wrapper>
   );
-};
+}
 
-// Styled Components
-// const Wrapper = styled.div`
-//   min-height: 100vh;
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-//   padding: 1rem;
-//   background: linear-gradient(to bottom right, #e0eafc, #cfdef3);
-// `;
+const Wrapper = styled.div`
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(145deg, #f0f0f0, #d0d0d0);
+  padding: 16px;
 
-// const FormWrapper = styled.div`
-//   width: 100%;
-//   max-width: 400px;
-//   padding: 2rem;
-//   background: white;
-//   border-radius: 1rem;
-//   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-// `;
+  @media (min-width: 768px) {
+    padding: 24px;
+  }
+`;
 
-// const Icon = styled.div`
-//   font-size: 3rem;
-//   text-align: center;
-//   margin-bottom: 1rem;
-// `;
+const FormWrapper = styled(motion.div)`
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
 
-// const Title = styled.h2`
-//   text-align: center;
-//   margin-bottom: 1rem;
-//   font-size: 1.75rem;
-// `;
+  @media (min-width: 768px) {
+    padding: 32px;
+    border-radius: 16px;
+    max-width: 400px;
+  }
+`;
 
-// const Input = styled.input`
-//   width: 90%;
-//   padding: 0.75rem 1rem;
-//   margin-bottom: 1rem;
-//   border: 1px solid #ccc;
-//   border-radius: 0.75rem;
-//   font-size: 1rem;
+const Icon = styled.div`
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 12px;
+  @media (min-width: 768px) {
+    font-size: 48px;
+    margin-bottom: 16px;
+  }
+`;
 
-//   &:focus {
-//     border-color: #3f51b5;
-//     outline: none;
-//   }
-// `;
+const Title = styled.h2`
+  text-align: center;
+  font-weight: 700;
+  font-size: 20px;
+  color: #1976d2;
+  margin-bottom: 20px;
 
-// const SubmitButton = styled.button`
-//   width: 100%;
-//   padding: 0.75rem 1rem;
-//   background: #3f51b5;
-//   color: white;
-//   border: none;
-//   border-radius: 0.75rem;
-//   font-size: 1rem;
-//   cursor: pointer;
-//   transition: background 0.3s;
+  @media (min-width: 768px) {
+    font-size: 24px;
+    margin-bottom: 24px;
+  }
+`;
 
-//   &:hover {
-//     background: #303f9f;
-//   }
-// `;
+const InputWrapper = styled.div`
+  position: relative;
+  margin-bottom: 15px;
+`;
 
-// const Toggle = styled.button`
-//   background: none;
-//   border: none;
-//   color: #3f51b5;
-//   margin-top: 1rem;
-//   cursor: pointer;
-//   width: 100%;
-//   text-align: center;
-//   font-size: 0.9rem;
-// `;
+const inputErrorStyle = css`
+  border-color: red;
+`;
 
-// const ErrorMessage = styled.div`
-//   margin-top: 1rem;
-//   color: #d32f2f;
-//   font-size: 0.9rem;
-//   text-align: center;
-// `;
+const Input = styled.input`
+  width: 100%;
+  padding: 10px;
+  padding-right: ${({ hasError }) => (hasError ? "90px" : "10px")};
+  border: 2px solid #ccc;
+  border-radius: 6px;
+  outline: none;
+  font-size: 14px;
 
-export default AuthForm;
+  ${({ hasError }) => hasError && inputErrorStyle}
+
+  &:focus {
+    border-color: ${({ hasError }) => (hasError ? "red" : "#007bff")};
+    outline: none;
+    box-shadow: 0 0 8px rgba(25, 118, 210, 0.25);
+  }
+  &:hover {
+    border-color: #1976d2;
+    box-shadow: 0 3px 6px rgba(25, 118, 210, 0.12);
+  }
+`;
+
+const ErrorInside = styled.span`
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  color: red;
+  background: white;
+  padding: 0 4px;
+  border-radius: 3px;
+`;
+
+const SubmitButton = styled.button`
+  width: 100%;
+  padding: 10px;
+  background: #007bff;
+  border: none;
+  color: white;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+
+  &:hover {
+    background: #0056b3;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &:disabled {
+    background: gray;
+    cursor: not-allowed;
+  }
+`;
+
+const Toggle = styled.button`
+  margin-top: 14px;
+  background: none;
+  border: none;
+  color: #1976d2;
+  font-size: 13px;
+  cursor: pointer;
+  text-align: center;
+  width: 100%;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: #125a9c;
+    text-decoration: underline;
+  }
+`;
+
+const ErrorMessage = styled.div`
+  margin-top: 10px;
+  color: #d32f2f;
+  font-size: 13px;
+  text-align: center;
+
+  @media (min-width: 768px) {
+    font-size: 14px;
+    margin-top: 12px;
+  }
+`;

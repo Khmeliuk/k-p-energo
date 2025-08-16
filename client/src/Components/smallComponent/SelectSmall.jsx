@@ -8,7 +8,6 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 320px;
   position: relative;
 `;
 
@@ -18,19 +17,18 @@ const SelectContainer = styled.div`
 
 const SelectElement = styled(motion.select)`
   width: 100%;
-  min-width: 220px; /* трохи більше для стабільності */
-  height: 44px; /* фіксована висота для стабільності */
+  min-width: 220px;
+  height: 44px;
   padding: 12px 40px 12px 16px;
-  border-radius: 8px;
-  border: 1.5px solid #ccc;
+  border-radius: 6px;
+  border: 2px solid #ccc;
   font-size: 16px;
   line-height: 20px;
   background-color: #fff;
-  color: #333333;
+  color: ${(props) => (props.value === "" ? "#808080" : "#333")};
   cursor: pointer;
   appearance: none;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: none;
 
   &:hover {
     border-color: #1976d2;
@@ -75,8 +73,8 @@ export default function SelectSmall({ options, name, onChange }) {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
         >
-          <option value="" disabled hidden>
-            {` ${name}`}
+          <option value="" disabled>
+            {`Виберіть ${name}`}
           </option>
           {options?.map((option) => (
             <option key={option} value={option}>
