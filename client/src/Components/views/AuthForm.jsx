@@ -7,7 +7,6 @@ import { Copyright } from "../muicomponent/Typography";
 import { useState, useEffect } from "react";
 import styled, { css } from "styled-components";
 
-// Styled Components
 const registrationFormField = {
   name: "",
   lastName: "",
@@ -26,9 +25,7 @@ export default function AuthForm() {
   const navigate = useNavigate();
 
   const toggleForm = () => {
-    setFormValues({
-      ...registrationFormField,
-    });
+    setFormValues({ ...registrationFormField });
     setIsLogin(!isLogin);
     setErrors({});
   };
@@ -65,9 +62,8 @@ export default function AuthForm() {
       if (!formValues.name.trim()) newErrors.name = "Required";
       if (!formValues.lastName.trim()) newErrors.lastName = "Required";
       if (!formValues.role) newErrors.role = "Required";
-      if (formValues.password !== formValues.confirmPassword) {
+      if (formValues.password !== formValues.confirmPassword)
         newErrors.confirmPassword = "No match";
-      }
     }
 
     if (!formValues.email.trim()) newErrors.email = "Required";
@@ -88,9 +84,7 @@ export default function AuthForm() {
     const mutation = isLogin ? loginMutation : registrationMutation;
 
     mutation.mutate(payload, {
-      onSuccess: () => {
-        navigate("/task");
-      },
+      onSuccess: () => navigate("/task"),
     });
   };
 
@@ -114,7 +108,7 @@ export default function AuthForm() {
                   placeholder="Name"
                   value={formValues.name}
                   onChange={handleChange}
-                  hasError={!!errors.name}
+                  $hasError={!!errors.name}
                 />
                 {errors.name && <ErrorInside>{errors.name}</ErrorInside>}
               </InputWrapper>
@@ -125,7 +119,7 @@ export default function AuthForm() {
                   placeholder="Last Name"
                   value={formValues.lastName}
                   onChange={handleChange}
-                  hasError={!!errors.lastName}
+                  $hasError={!!errors.lastName}
                 />
                 {errors.lastName && (
                   <ErrorInside>{errors.lastName}</ErrorInside>
@@ -140,11 +134,7 @@ export default function AuthForm() {
                 }
                 options={["user", "super user", "admin"]}
               />
-              {errors.role && (
-                <ErrorInside style={{ position: "static" }}>
-                  {errors.role}
-                </ErrorInside>
-              )}
+              {errors.role && <ErrorInside>{errors.role}</ErrorInside>}
             </>
           )}
 
@@ -154,7 +144,7 @@ export default function AuthForm() {
               placeholder="Email"
               value={formValues.email}
               onChange={handleChange}
-              hasError={!!errors.email}
+              $hasError={!!errors.email}
             />
             {errors.email && <ErrorInside>{errors.email}</ErrorInside>}
           </InputWrapper>
@@ -166,7 +156,7 @@ export default function AuthForm() {
               type="password"
               value={formValues.password}
               onChange={handleChange}
-              hasError={!!errors.password}
+              $hasError={!!errors.password}
             />
             {errors.password && <ErrorInside>{errors.password}</ErrorInside>}
           </InputWrapper>
@@ -179,7 +169,7 @@ export default function AuthForm() {
                 type="password"
                 value={formValues.confirmPassword}
                 onChange={handleChange}
-                hasError={!!errors.confirmPassword}
+                $hasError={!!errors.confirmPassword}
               />
               {errors.confirmPassword && (
                 <ErrorInside>{errors.confirmPassword}</ErrorInside>
@@ -202,11 +192,7 @@ export default function AuthForm() {
             </ErrorMessage>
           )}
 
-          {errors.general && (
-            <ErrorInside style={{ position: "static", display: "block" }}>
-              {errors.general}
-            </ErrorInside>
-          )}
+          {errors.general && <ErrorInside>{errors.general}</ErrorInside>}
 
           <Toggle type="button" onClick={toggleForm}>
             {isLogin
@@ -221,6 +207,7 @@ export default function AuthForm() {
   );
 }
 
+// ================= STYLES =================
 const Wrapper = styled.div`
   min-height: 100vh;
   display: flex;
@@ -228,10 +215,6 @@ const Wrapper = styled.div`
   align-items: center;
   background: linear-gradient(145deg, #f0f0f0, #d0d0d0);
   padding: 16px;
-
-  @media (min-width: 768px) {
-    padding: 24px;
-  }
 `;
 
 const FormWrapper = styled(motion.div)`
@@ -243,22 +226,12 @@ const FormWrapper = styled(motion.div)`
   max-width: 360px;
   display: flex;
   flex-direction: column;
-
-  @media (min-width: 768px) {
-    padding: 32px;
-    border-radius: 16px;
-    max-width: 400px;
-  }
 `;
 
 const Icon = styled.div`
   font-size: 2rem;
   text-align: center;
   margin-bottom: 12px;
-  @media (min-width: 768px) {
-    font-size: 48px;
-    margin-bottom: 16px;
-  }
 `;
 
 const Title = styled.h2`
@@ -267,11 +240,6 @@ const Title = styled.h2`
   font-size: 20px;
   color: #1976d2;
   margin-bottom: 20px;
-
-  @media (min-width: 768px) {
-    font-size: 24px;
-    margin-bottom: 24px;
-  }
 `;
 
 const InputWrapper = styled.div`
@@ -286,19 +254,16 @@ const inputErrorStyle = css`
 const Input = styled.input`
   width: 100%;
   padding: 10px;
-  padding-right: ${({ hasError }) => (hasError ? "90px" : "10px")};
-  border: 2px solid #ccc;
+  border: 2px solid ${({ $hasError }) => ($hasError ? "red" : "#ccc")};
   border-radius: 6px;
   outline: none;
   font-size: 14px;
 
-  ${({ hasError }) => hasError && inputErrorStyle}
-
   &:focus {
-    border-color: ${({ hasError }) => (hasError ? "red" : "#007bff")};
-    outline: none;
+    border-color: ${({ $hasError }) => ($hasError ? "red" : "#007bff")};
     box-shadow: 0 0 8px rgba(25, 118, 210, 0.25);
   }
+
   &:hover {
     border-color: #1976d2;
     box-shadow: 0 3px 6px rgba(25, 118, 210, 0.12);
@@ -363,9 +328,4 @@ const ErrorMessage = styled.div`
   color: #d32f2f;
   font-size: 13px;
   text-align: center;
-
-  @media (min-width: 768px) {
-    font-size: 14px;
-    margin-top: 12px;
-  }
 `;

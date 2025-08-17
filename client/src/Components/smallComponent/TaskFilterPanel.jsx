@@ -15,6 +15,7 @@ const TaskFilterPanel = ({
   currentPage,
   totalPages,
   onPageChange,
+  onGetDateSort,
   children,
 }) => {
   const [selectedStatuses, setSelectedStatuses] = useState([]);
@@ -24,22 +25,18 @@ const TaskFilterPanel = ({
   const { data: stateCount, isLoading } = useAllTaskQuery();
 
   const toggleStatus = (value) => {
-    setSelectedStatuses((prev) =>
-      prev.includes(value)
+    setSelectedStatuses((prev) => {
+      const updated = prev.includes(value)
         ? prev.filter((status) => status !== value)
-        : [...prev, value]
-    );
-  };
+        : [...prev, value];
 
+      onFilterChange(updated);
+      return updated;
+    });
+  };
   const handleDateFilter = (e) => {
     setDateFilter(e.target.value);
-  };
-
-  const applyFilters = () => {
-    console.log("====================================");
-    console.log(selectedStatuses);
-    console.log("====================================");
-    onFilterChange({ statuses: selectedStatuses, dateFilter });
+    onGetDateSort(e.target.value);
   };
 
   const toggleView = () => {
@@ -74,6 +71,8 @@ const TaskFilterPanel = ({
         <Select value={dateFilter} onChange={handleDateFilter}>
           <option value="all">Всі дати</option>
           <option value="last_5_days">Останні 5 днів</option>
+          <option value="new">Новіші</option>
+          <option value="old">Старіші</option>
         </Select>
       </Section>
 
@@ -81,7 +80,7 @@ const TaskFilterPanel = ({
         {viewMode ? "Показати картками" : "Показати списком"}
       </ViewToggleButton>
 
-      <ApplyButton onClick={applyFilters}>Застосувати</ApplyButton>
+      {/* <ApplyButton onClick={applyFilters}>Застосувати</ApplyButton> */}
 
       {children}
 

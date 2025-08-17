@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { useNavigate } from "react-router-dom";
 import {
@@ -12,6 +12,7 @@ import TaskForm from "./TaskForm.jsx/TaskForm";
 import TaskFilterPanel from "./smallComponent/TaskFilterPanel";
 import TaskboardCarts from "./smallComponent/TaskboardCarts";
 import TaskboardText from "./smallComponent/TaskboardText";
+import sortByDate from "../service/methods/sort";
 
 const user = {
   name: "John Doe",
@@ -21,7 +22,16 @@ const user = {
 const TaskComponent = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isCard, setIsCard] = useState(false);
-  const { data: tasks, isLoading, isError, isFetched } = useAllTaskQuery();
+  const [filterTasks, setFilterTasks] = useState([]);
+  const [filter, setFilter] = useState([]);
+  const [dateSort, setdateSort] = useState("");
+  const {
+    data: tasks,
+    isLoading,
+    isError,
+    isFetched,
+    isSuccess,
+  } = useAllTaskQuery();
   const { data: currentUser, isLoading: currentUserIsLoading } =
     useGetCurrentUser();
   const queryClient = useQueryClient();
@@ -29,6 +39,22 @@ const TaskComponent = () => {
   const toggleMenu = () => setMenuOpen((prev) => !prev);
   const onViewChange = (data) => {
     setIsCard(data);
+  };
+
+  const getFilterTasks = (filter) => {
+    if (isSuccess) {
+      const Tasks = tasks.data.tasks.filter((el) => filter.includes(el.status));
+
+      setFilterTasks(sortByDate(Tasks, dateSort));
+    }
+  };
+
+  useEffect(() => {
+    getFilterTasks(filter);
+  }, [filter, dateSort]);
+
+  const onFilterChange = (filterArr) => {
+    setFilter(filterArr);
   };
 
   const handleMenuClick = async (option) => {
@@ -71,13 +97,17 @@ const TaskComponent = () => {
           </Dropdown>
         )}
       </Header>
-      <TaskFilterPanel onViewChange={onViewChange}>
+      <TaskFilterPanel
+        onViewChange={onViewChange}
+        onFilterChange={onFilterChange}
+        onGetDateSort={setdateSort}
+      >
         {isFetched && (
           <>
             {!isCard ? (
-              <TaskboardCarts tasks={tasks} isFetched={isFetched} />
+              <TaskboardCarts tasks={filterTasks} isFetched={isFetched} />
             ) : (
-              <TaskboardText tasks={tasks} isFetched={isFetched} />
+              <TaskboardText tasks={filterTasks} isFetched={isFetched} />
             )}
           </>
         )}

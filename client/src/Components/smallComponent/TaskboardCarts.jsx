@@ -5,7 +5,7 @@ const TaskboardCarts = ({ tasks, isFetched }) => {
   return (
     <TaskContainer>
       {isFetched &&
-        tasks?.data?.tasks?.map((task) => (
+        tasks?.map((task) => (
           <TaskCard
             key={task._id}
             owner={task.owner}

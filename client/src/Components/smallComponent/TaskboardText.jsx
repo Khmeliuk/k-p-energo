@@ -98,17 +98,14 @@ const getStatusIcon = (status) => {
 };
 
 export default function TaskboardText({ tasks, isFetched }) {
-  console.log("====================================");
-  console.log(tasks);
-  console.log("====================================");
   return (
     isFetched && (
       <TaskList>
-        {tasks?.data?.tasks?.map((task, index) => (
+        {tasks?.map((task, index) => (
           <TaskItem key={index} status={task.status}>
             <div>
               <TaskHeader>
-                {/* <StatusIcon>{getStatusIcon(task.status)}</StatusIcon> */}
+                <StatusIcon>{getStatusIcon(task.status)}</StatusIcon>
                 Owner: {task?.owner.name} | Department {task?.department}
               </TaskHeader>
               <TaskDetails>{task?.task}</TaskDetails>
