@@ -4,9 +4,10 @@ import styled from "styled-components";
 import { useAllTaskQuery } from "../../service/reactQuery/reactQuery";
 
 const statuses = [
-  { label: "Виконані", value: "completed" },
+  { label: "Виконані", value: "done" },
   { label: "Не виконані", value: "incomplete" },
   { label: "Заплановані", value: "planned" },
+  { label: "Відкладенні", value: "postpone" },
 ];
 
 const TaskFilterPanel = ({
@@ -59,7 +60,7 @@ const TaskFilterPanel = ({
                 selected={selectedStatuses.includes(value)}
                 onClick={() => toggleStatus(value)}
               >
-                {label}: {stateCount.data.statusCount[value] || 0}
+                {label}: {stateCount?.data?.statusCount[value] || 0}
               </StatusButton>
             ))}
           </StatusList>

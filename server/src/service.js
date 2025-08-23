@@ -11,7 +11,19 @@ import fastifyCors from "@fastify/cors";
 import "dotenv/config";
 import statusRouter from "./routers/statusRouter.js";
 
-const fastify = Fastify({ logger: true });
+const isProd = process.env.NODE_ENV === "production";
+
+const fastify = Fastify({
+  logger: isProd
+    ? { level: "info" } // чистий JSON для продакшну
+    : {
+        level: "debug",
+        transport: {
+          target: "pino-pretty",
+          options: { colorize: true, translateTime: "SYS:standard" },
+        },
+      },
+});
 
 fastify.register(fastifyMultipart, {
   addToBody: true, // Додаємо поля з formData до request.body

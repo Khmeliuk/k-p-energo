@@ -68,3 +68,16 @@ export const getStatus = async () => {
   const status = await axiosInstance.get("/status/getAllStatus");
   return status;
 };
+
+export const patchStatus = async ({ taskId, newStatus }) => {
+  try {
+    const result = await axiosInstance.patch("/task/status", {
+      id: taskId,
+      status: newStatus,
+    });
+    return result;
+  } catch (error) {
+    console.error(error);
+    return error;
+  }
+};

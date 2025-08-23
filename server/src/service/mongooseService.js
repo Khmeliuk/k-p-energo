@@ -54,6 +54,9 @@ export const updateOne = (id, data) => {
 };
 
 export const updateOneTask = ({ id, owner }, data, opt) => {
+  console.log("====================================");
+  console.log(owner, "updateOneTask");
+  console.log("====================================");
   return Task.findOneAndUpdate({ _id: id, owner: owner }, data, opt);
 };
 

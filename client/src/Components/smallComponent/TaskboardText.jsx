@@ -14,6 +14,7 @@ import {
   FiFileText,
   FiPause,
 } from "react-icons/fi";
+import { useUpdateTaskStatus } from "../../service/reactQuery/reactMutation";
 
 const getStatusIcon = (status) => {
   switch (status) {
@@ -53,6 +54,8 @@ export default function TaskboardText({ tasks, isFetched, onStatusChange }) {
   const [expandedTasks, setExpandedTasks] = useState(new Set());
   const [openDropdown, setOpenDropdown] = useState(null);
 
+  const updateTaskStatusMutation = useUpdateTaskStatus();
+
   const toggleExpand = (index, e) => {
     e.stopPropagation();
     const newExpanded = new Set(expandedTasks);
@@ -69,13 +72,11 @@ export default function TaskboardText({ tasks, isFetched, onStatusChange }) {
     setOpenDropdown(openDropdown === index ? null : index);
   };
 
-  const handleStatusChange = (taskIndex, newStatus, e) => {
+  const handleStatusChange = (taskIndex, newStatus, e, id) => {
     e.stopPropagation();
-    console.log(newStatus);
+    console.log(id, newStatus);
+    updateTaskStatusMutation.mutate({ taskId: id, newStatus: newStatus });
 
-    if (onStatusChange) {
-      onStatusChange(taskIndex, newStatus);
-    }
     setOpenDropdown(null);
   };
 
@@ -92,13 +93,14 @@ export default function TaskboardText({ tasks, isFetched, onStatusChange }) {
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
+  console.log(tasks);
 
   return (
     isFetched && (
       <TaskList>
         {tasks?.map((task, index) => (
           <TaskItem
-            key={index}
+            key={task._id}
             status={task.status}
             onClick={(e) => handleTaskClick(index, e)}
           >
@@ -117,7 +119,9 @@ export default function TaskboardText({ tasks, isFetched, onStatusChange }) {
                       <StatusOption
                         status="done"
                         $isSelected={task.status === "done"}
-                        onClick={(e) => handleStatusChange(index, "done", e)}
+                        onClick={(e) =>
+                          handleStatusChange(index, "done", e, task._id)
+                        }
                       >
                         <FiCheckCircle />
                         Completed
@@ -126,7 +130,7 @@ export default function TaskboardText({ tasks, isFetched, onStatusChange }) {
                         status="postpone"
                         $isSelected={task.status === "postpone"}
                         onClick={(e) =>
-                          handleStatusChange(index, "postpone", e)
+                          handleStatusChange(index, "postpone", e, task._id)
                         }
                       >
                         <FiPause />

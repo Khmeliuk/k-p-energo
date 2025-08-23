@@ -11,6 +11,7 @@ import {
   addTaskHandler,
   patchTaskHandler,
   deleteTaskHandler,
+  changeStatusHandler,
 } from "../controllers/taskController.js";
 
 export default async function taskRouter(fastify, opt) {
@@ -48,6 +49,15 @@ export default async function taskRouter(fastify, opt) {
     schema: updateTask,
     attachValidation: "true",
     handler: patchTaskHandler,
+  });
+
+  fastify.route({
+    method: "patch",
+    url: "/status",
+    onRequest: [fastify.authenticate],
+    // schema: updateTask,
+    attachValidation: "true",
+    handler: changeStatusHandler,
   });
 
   fastify.route({
