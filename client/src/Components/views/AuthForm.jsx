@@ -5,7 +5,7 @@ import { useAuthMutation } from "../../service/reactQuery/reactMutation";
 import SelectSmall from "../smallComponent/SelectSmall";
 import { Copyright } from "../muicomponent/Typography";
 import { useState, useEffect } from "react";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 
 const registrationFormField = {
   name: "",
@@ -20,6 +20,8 @@ export default function AuthForm() {
   const [isLogin, setIsLogin] = useState(false);
   const [formValues, setFormValues] = useState({ ...registrationFormField });
   const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const loginMutation = useAuthMutation(login);
   const registrationMutation = useAuthMutation(registration);
   const navigate = useNavigate();
@@ -28,12 +30,19 @@ export default function AuthForm() {
     setFormValues({ ...registrationFormField });
     setIsLogin(!isLogin);
     setErrors({});
+    setShowPassword(false);
+    setShowConfirmPassword(false);
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormValues((prev) => ({ ...prev, [name]: value }));
     setErrors((prev) => ({ ...prev, [name]: "" }));
+  };
+
+  const handleRoleChange = (value) => {
+    setFormValues((prev) => ({ ...prev, role: value }));
+    setErrors((prev) => ({ ...prev, role: "" }));
   };
 
   useEffect(() => {
@@ -126,15 +135,15 @@ export default function AuthForm() {
                 )}
               </InputWrapper>
 
-              <SelectSmall
-                name="role"
-                value={formValues.role}
-                onChange={(value) =>
-                  setFormValues((prev) => ({ ...prev, role: value }))
-                }
-                options={["user", "super user", "admin"]}
-              />
-              {errors.role && <ErrorInside>{errors.role}</ErrorInside>}
+              <SelectWrapper>
+                <SelectSmall
+                  name="role"
+                  value={formValues.role}
+                  onChange={handleRoleChange}
+                  options={["user", "super user", "admin"]}
+                />
+                {errors.role && <SelectError>{errors.role}</SelectError>}
+              </SelectWrapper>
             </>
           )}
 
@@ -153,11 +162,18 @@ export default function AuthForm() {
             <Input
               name="password"
               placeholder="Password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               value={formValues.password}
               onChange={handleChange}
               $hasError={!!errors.password}
+              $hasToggle={true}
             />
+            <PasswordToggle
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? "👁️" : "👁️‍🗨️"}
+            </PasswordToggle>
             {errors.password && <ErrorInside>{errors.password}</ErrorInside>}
           </InputWrapper>
 
@@ -166,11 +182,18 @@ export default function AuthForm() {
               <Input
                 name="confirmPassword"
                 placeholder="Confirm Password"
-                type="password"
+                type={showConfirmPassword ? "text" : "password"}
                 value={formValues.confirmPassword}
                 onChange={handleChange}
                 $hasError={!!errors.confirmPassword}
+                $hasToggle={true}
               />
+              <PasswordToggle
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                {showConfirmPassword ? "👁️" : "👁️‍🗨️"}
+              </PasswordToggle>
               {errors.confirmPassword && (
                 <ErrorInside>{errors.confirmPassword}</ErrorInside>
               )}
@@ -247,13 +270,22 @@ const InputWrapper = styled.div`
   margin-bottom: 15px;
 `;
 
-const inputErrorStyle = css`
-  border-color: red;
+const SelectWrapper = styled.div`
+  position: relative;
+  margin-bottom: 15px;
 `;
 
 const Input = styled.input`
   width: 100%;
   padding: 10px;
+  padding-right: ${({ $hasToggle, $hasError }) =>
+    $hasToggle && $hasError
+      ? "70px"
+      : $hasToggle
+      ? "40px"
+      : $hasError
+      ? "60px"
+      : "10px"};
   border: 2px solid ${({ $hasError }) => ($hasError ? "red" : "#ccc")};
   border-radius: 6px;
   outline: none;
@@ -270,9 +302,26 @@ const Input = styled.input`
   }
 `;
 
-const ErrorInside = styled.span`
+const PasswordToggle = styled.button`
   position: absolute;
   right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  z-index: 2;
+  padding: 2px;
+
+  &:hover {
+    opacity: 0.7;
+  }
+`;
+
+const ErrorInside = styled.span`
+  position: absolute;
+  right: ${({ theme }) => "35px"};
   top: 50%;
   transform: translateY(-50%);
   font-size: 12px;
@@ -280,6 +329,21 @@ const ErrorInside = styled.span`
   background: white;
   padding: 0 4px;
   border-radius: 3px;
+  z-index: 1;
+`;
+
+const SelectError = styled.span`
+  position: absolute;
+  right: 35px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  color: red;
+  background: white;
+  padding: 0 4px;
+  border-radius: 3px;
+  z-index: 10;
+  pointer-events: none;
 `;
 
 const SubmitButton = styled.button`

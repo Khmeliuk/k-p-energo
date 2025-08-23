@@ -47,9 +47,13 @@ const CustomModal = ({ children }) => {
 
   return (
     <div>
-      <Button variant="contained" color="primary" onClick={handleClickOpen}>
+      <StyledButton
+        variant="contained"
+        color="primary"
+        onClick={handleClickOpen}
+      >
         Add New Task
-      </Button>
+      </StyledButton>
       <StyledDialog open={open} onClose={handleClose}>
         <DialogTitle>Add New Task</DialogTitle>
         <StyledDialogContent dividers>{children}</StyledDialogContent>
@@ -68,3 +72,11 @@ CustomModal.propTypes = {
 };
 
 export default CustomModal;
+
+const StyledButton = styled(Button)`
+  && {
+    position: fixed;
+    right: 1%;
+    bottom: 5%;
+  }
+`;

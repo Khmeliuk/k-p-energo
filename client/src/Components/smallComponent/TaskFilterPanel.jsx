@@ -30,9 +30,9 @@ const TaskFilterPanel = ({
         ? prev.filter((status) => status !== value)
         : [...prev, value];
 
-      onFilterChange(updated);
       return updated;
     });
+    onFilterChange([...selectedStatuses, value]);
   };
   const handleDateFilter = (e) => {
     setDateFilter(e.target.value);
