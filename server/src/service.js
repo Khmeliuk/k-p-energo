@@ -11,7 +11,7 @@ import fastifyCors from "@fastify/cors";
 import "dotenv/config";
 import statusRouter from "./routers/statusRouter.js";
 
-const isProd = process.env.NODE_ENV === "production";
+const isProd = process.env.NODE_ENV === "development";
 
 const fastify = Fastify({
   logger: isProd

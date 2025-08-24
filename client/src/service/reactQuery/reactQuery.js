@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getStatus, getTasks, refresh } from "../API/axios";
 
 export const useAllTaskQuery = () => {
@@ -10,8 +10,12 @@ export const useAllTaskQuery = () => {
 };
 
 export const useGetCurrentUser = () => {
+  const queryClient = useQueryClient();
+
   return useQuery({
     queryKey: ["user"],
+    queryFn: () => Promise.resolve(queryClient.getQueryData(["user"])), // щоб не падало
+    initialData: queryClient.getQueryData(["user"]),
     enabled: false,
   });
 };

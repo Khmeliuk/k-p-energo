@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useAllTaskQuery } from "../../service/reactQuery/reactQuery";
 
@@ -25,19 +25,24 @@ const TaskFilterPanel = ({
 
   const { data: stateCount, isLoading } = useAllTaskQuery();
 
-  const toggleStatus = (value) => {
-    setSelectedStatuses((prev) => {
-      const updated = prev.includes(value)
-        ? prev.filter((status) => status !== value)
-        : [...prev, value];
+  // ✅ Викликаємо onFilterChange тільки коли змінюється selectedStatuses
+  useEffect(() => {
+    if (onFilterChange) {
+      onFilterChange(selectedStatuses);
+    }
+  }, [selectedStatuses, onFilterChange]);
 
-      return updated;
-    });
-    onFilterChange([...selectedStatuses, value]);
+  const toggleStatus = (value) => {
+    setSelectedStatuses((prev) =>
+      prev.includes(value)
+        ? prev.filter((status) => status !== value)
+        : [...prev, value]
+    );
   };
+
   const handleDateFilter = (e) => {
     setDateFilter(e.target.value);
-    onGetDateSort(e.target.value);
+    onGetDateSort?.(e.target.value);
   };
 
   const toggleView = () => {
@@ -80,8 +85,6 @@ const TaskFilterPanel = ({
       <ViewToggleButton onClick={toggleView}>
         {viewMode ? "Показати картками" : "Показати списком"}
       </ViewToggleButton>
-
-      {/* <ApplyButton onClick={applyFilters}>Застосувати</ApplyButton> */}
 
       {children}
 
@@ -209,5 +212,6 @@ TaskFilterPanel.propTypes = {
   currentPage: PropTypes.number,
   totalPages: PropTypes.number,
   onPageChange: PropTypes.func,
+  onGetDateSort: PropTypes.func,
   children: PropTypes.node,
 };
