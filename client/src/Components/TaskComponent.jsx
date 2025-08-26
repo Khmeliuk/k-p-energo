@@ -53,6 +53,14 @@ const TaskComponent = () => {
     getFilterTasks(filter);
   }, [filter, dateSort]);
 
+  useEffect(() => {
+    if (isFetched) {
+      console.log("====================================");
+      console.log(isFetched, "isFetched");
+      console.log("====================================");
+    }
+  });
+
   const onFilterChange = (filterArr) => {
     setFilter(filterArr);
   };

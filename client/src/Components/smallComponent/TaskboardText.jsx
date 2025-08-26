@@ -20,7 +20,7 @@ const getStatusIcon = (status) => {
   switch (status) {
     case "done":
       return <FiCheckCircle />;
-    case "overdue":
+    case "incomplete":
       return <FiAlertTriangle />;
     case "in-progress":
       return <FiClock />;
@@ -37,8 +37,8 @@ const getStatusText = (status) => {
   switch (status) {
     case "done":
       return "Completed";
-    case "overdue":
-      return "Overdue";
+    case "incomplete":
+      return "incomplete";
     case "in-progress":
       return "In Progress";
     case "planned":
@@ -303,7 +303,7 @@ const TaskItem = styled.div`
             box-shadow: 0 4px 15px rgba(40, 167, 69, 0.15);
           }
         `;
-      case "overdue":
+      case "incomplete":
         return `
           background: linear-gradient(135deg, #f8d7da 0%, #fff5f5 100%);
           border: 1px solid #dc3545;
@@ -373,7 +373,7 @@ const TaskItem = styled.div`
       switch (status) {
         case "done":
           return `box-shadow: 0 4px 16px rgba(40, 167, 69, 0.2);`;
-        case "overdue":
+        case "incomplete":
           return `box-shadow: 0 4px 16px rgba(220, 53, 69, 0.2);`;
         case "in-progress":
           return `box-shadow: 0 4px 16px rgba(255, 193, 7, 0.2);`;
@@ -403,7 +403,7 @@ const TaskItem = styled.div`
       switch (status) {
         case "done":
           return `background: #28a745;`;
-        case "overdue":
+        case "incomplete":
           return `background: #dc3545;`;
         case "in-progress":
           return `background: #ffc107;`;
@@ -508,7 +508,7 @@ const StatusBadge = styled.div`
           color: #155724;
           border: 1px solid rgba(40, 167, 69, 0.3);
         `;
-      case "overdue":
+      case "incomplete":
         return `
           background: rgba(220, 53, 69, 0.2);
           color: #721c24;
@@ -678,7 +678,7 @@ const TaskDescription = styled.div`
       switch (status) {
         case "done":
           return "#28a745";
-        case "overdue":
+        case "incomplete":
           return "#dc3545";
         case "in-progress":
           return "#ffc107";
@@ -742,7 +742,7 @@ TaskboardText.propTypes = {
       // Статус завдання
       status: PropTypes.oneOf([
         "done",
-        "overdue",
+        "incomplete",
         "in-progress",
         "planned",
         "postpone",

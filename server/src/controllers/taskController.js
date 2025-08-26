@@ -55,7 +55,7 @@ export const getAllTaskHandler = async function (req, reply) {
 
     // Підготовка масиву операцій для bulkWrite
     const bulkOps = tasks
-      .filter((el) => el.status !== "done") // не оновлюємо завершені
+      .filter((el) => el.status !== "done" && el.status !== "postponed") // не оновлюємо завершені
       .map((el) => {
         let newStatus = el.status;
 
