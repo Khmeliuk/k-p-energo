@@ -1,13 +1,12 @@
-import { StrictMode, useEffect } from "react";
+import { StrictMode } from "react";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import AuthForm from "./Components/views/AuthForm";
-import { GlobalStyles } from "./styled/globalStyle";
-import MainPage from "./Components/views/MainPage";
+import AuthForm from "./views/AuthForm";
+import GlobalStyles from "./styled/globalStyle";
 import { Navigate, Route, Routes } from "react-router-dom";
+import ProtectedLayout from "./layout/ProtectionLayout";
 import TaskComponent from "./Components/TaskComponent";
-import ProtectedRoute from "../components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -17,16 +16,12 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <GlobalStyles />
         <Routes>
-          <Route path="/" element={<MainPage />} />
           <Route path="/auth" element={<AuthForm />} />
-          <Route
-            path="/task"
-            element={
-              <ProtectedRoute>
-                <TaskComponent />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/" element={<ProtectedLayout />}>
+            <Route path="tasks" element={<TaskComponent />} />
+            {/* <Route path="projects" element={<ProjectsComponent />} />
+            <Route path="team" element={<TeamComponent />} /> */}
+          </Route>
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
         <ReactQueryDevtools />

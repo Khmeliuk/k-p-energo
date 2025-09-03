@@ -101,6 +101,7 @@ export const loginHandler = async function (req, reply) {
       lastName: user.lastName,
       email: user.email,
       role: user.role,
+      department: user.department,
     });
 
     return reply

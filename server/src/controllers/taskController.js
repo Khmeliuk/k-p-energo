@@ -6,6 +6,7 @@ import {
   createOnTask,
   updateOneTask,
   findAllTaskYourTask,
+  findAllTaskDepartmentTask,
 } from "../service/mongooseService.js";
 
 // export const getAllTaskHandler = async function (req, reply) {
@@ -49,7 +50,10 @@ import {
 
 export const getAllTaskHandler = async function (req, reply) {
   try {
-    const tasks = await findAllTaskYourTask(req.user._id);
+    console.log("====================================");
+    console.log(req.user.department, "asdasdasdasdasdasd");
+    console.log("====================================");
+    const tasks = await findAllTaskDepartmentTask(req.user.department);
 
     const now = new Date();
 

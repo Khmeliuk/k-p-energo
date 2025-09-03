@@ -10,7 +10,7 @@ export default async function authorization(fastify, opt) {
   fastify.route({
     method: "post",
     url: "/login",
-    schema: login,
+    // schema: login,
     attachValidation: true,
     handler: loginHandler,
   }),

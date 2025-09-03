@@ -1,5 +1,5 @@
 import { Navigate } from "react-router-dom";
-import { useRefreshQuery } from "../src/service/reactQuery/reactQuery";
+import { useRefreshQuery } from "../service/reactQuery/reactQuery";
 
 const ProtectedRoute = ({ children }) => {
   const { data: user, isLoading, isError } = useRefreshQuery();

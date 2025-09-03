@@ -53,6 +53,7 @@ export const schemaUnification = {
         type: "string",
       },
       role: { type: "string" },
+      department: { type: "string" },
     },
   },
   querystring: { name: { type: "string" }, excitement: { type: "integer" } },

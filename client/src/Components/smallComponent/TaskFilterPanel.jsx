@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useAllTaskQuery } from "../../service/reactQuery/reactQuery";
+import ViewToggle from "./ViewToggle";
 
 const statuses = [
   { label: "Виконані", value: "done" },
@@ -45,9 +46,9 @@ const TaskFilterPanel = ({
     onGetDateSort?.(e.target.value);
   };
 
-  const toggleView = () => {
-    setViewMode((prev) => {
-      const newValue = !prev;
+  const toggleView = (view) => {
+    setViewMode(() => {
+      const newValue = view;
       if (onViewChange) onViewChange(newValue);
       return newValue;
     });
@@ -73,18 +74,14 @@ const TaskFilterPanel = ({
       </Section>
 
       <Section>
-        <Label>Сортування по даті:</Label>
         <Select value={dateFilter} onChange={handleDateFilter}>
           <option value="all">Всі дати</option>
           <option value="last_5_days">Останні 5 днів</option>
           <option value="new">Новіші</option>
           <option value="old">Старіші</option>
         </Select>
+        <ViewToggle onClick={toggleView} />
       </Section>
-
-      <ViewToggleButton onClick={toggleView}>
-        {viewMode ? "Показати картками" : "Показати списком"}
-      </ViewToggleButton>
 
       {children}
 
@@ -122,6 +119,10 @@ const Wrapper = styled.div`
 
 const Section = styled.div`
   margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  gap: 1rem;
 `;
 
 const Label = styled.div`
@@ -154,31 +155,6 @@ const Select = styled.select`
   border-radius: 0.5rem;
   border: 1px solid #ccc;
   font-size: 1rem;
-`;
-
-const ApplyButton = styled.button`
-  background: #3f51b5;
-  color: white;
-  padding: 0.6rem 1rem;
-  border: none;
-  border-radius: 0.6rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.2s;
-  margin-top: 0.5rem;
-
-  &:hover {
-    background: #303f9f;
-  }
-`;
-
-const ViewToggleButton = styled(ApplyButton)`
-  background: #009688;
-  margin-bottom: 0.5rem;
-
-  &:hover {
-    background: #00796b;
-  }
 `;
 
 const Pagination = styled.div`

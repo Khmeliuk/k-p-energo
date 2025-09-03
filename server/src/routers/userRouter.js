@@ -18,7 +18,7 @@ export default async function userRouters(fastify, opt) {
   fastify.route({
     method: "GET",
     url: "/",
-    schema: getAllUsers,
+    // schema: getAllUsers,
     attachValidation: "error attachValidation",
     handler: getAllUserHandler,
   });
@@ -26,7 +26,7 @@ export default async function userRouters(fastify, opt) {
   fastify.route({
     method: "GET",
     url: "/:id",
-    schema: getUser,
+    // schema: getUser,
     attachValidation: "error attachValidation",
     handler: getUserHandler,
   });
@@ -34,7 +34,7 @@ export default async function userRouters(fastify, opt) {
   fastify.route({
     method: "post",
     url: "/",
-    schema: addUser,
+    // schema: addUser,
     attachValidation: "error attachValidation",
     handler: addUserHandler,
   });

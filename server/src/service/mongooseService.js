@@ -25,6 +25,13 @@ export const findAllTaskYourTask = (id) => {
   });
 };
 
+export const findAllTaskDepartmentTask = (department) => {
+  console.log("====================================");
+  console.log("department", department);
+  console.log("====================================");
+  return Task.find({ department: department });
+};
+
 export const findOne = (params) => {
   return User.findOne(params).select({
     __v: false,

@@ -60,7 +60,7 @@ const GoogleAutocomplete = ({
   };
 
   console.log("====================================");
-  console.log(bounds, "boundsGoogle");
+  console.log(bounds, "boundsGoogleqweqweqweqweqwe");
   console.log("====================================");
 
   const options = {

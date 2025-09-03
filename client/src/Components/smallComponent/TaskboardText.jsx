@@ -50,7 +50,7 @@ const getStatusText = (status) => {
   }
 };
 
-export default function TaskboardText({ tasks, isFetched, onStatusChange }) {
+export default function TaskboardText({ tasks, isFetched }) {
   const [expandedTasks, setExpandedTasks] = useState(new Set());
   const [openDropdown, setOpenDropdown] = useState(null);
 

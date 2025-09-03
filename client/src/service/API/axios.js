@@ -10,6 +10,8 @@ const axiosInstance = axios.create({
 export const login = async (formData) => {
   try {
     const user = await axiosInstance.post("/auth/login", formData);
+    console.log(user, "user");
+
     return user;
   } catch (error) {
     if (error.response && error.response.data?.message) {

@@ -1,9 +1,9 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { login, registration } from "../../service/API/axios";
-import { useAuthMutation } from "../../service/reactQuery/reactMutation";
-import SelectSmall from "../smallComponent/SelectSmall";
-import { Copyright } from "../muicomponent/Typography";
+import { login, registration } from "../service/API/axios";
+import { useAuthMutation } from "../service/reactQuery/reactMutation";
+import SelectSmall from "../Components/smallComponent/SelectSmall";
+import { Copyright } from "../Components/muicomponent/Typography";
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 
@@ -14,6 +14,7 @@ const registrationFormField = {
   email: "",
   password: "",
   confirmPassword: "",
+  department: "",
 };
 
 export default function AuthForm() {
@@ -43,6 +44,11 @@ export default function AuthForm() {
   const handleRoleChange = (value) => {
     setFormValues((prev) => ({ ...prev, role: value }));
     setErrors((prev) => ({ ...prev, role: "" }));
+  };
+
+  const handleDepartmentChange = (value) => {
+    setFormValues((prev) => ({ ...prev, department: value }));
+    setErrors((prev) => ({ ...prev, department: "" }));
   };
 
   useEffect(() => {
@@ -90,6 +96,8 @@ export default function AuthForm() {
       ? { email: formValues.email, password: formValues.password }
       : formValues;
 
+    console.log(payload);
+
     const mutation = isLogin ? loginMutation : registrationMutation;
 
     mutation.mutate(payload, {
@@ -135,6 +143,19 @@ export default function AuthForm() {
                 )}
               </InputWrapper>
 
+              {/* <InputWrapper>
+                <Input
+                  name="department"
+                  placeholder="Department"
+                  value={formValues.department}
+                  onChange={handleChange}
+                  $hasError={!!errors.department}
+                />
+                {errors.department && (
+                  <ErrorInside>{errors.department}</ErrorInside>
+                )}
+              </InputWrapper> */}
+
               <SelectWrapper>
                 <SelectSmall
                   name="role"
@@ -143,6 +164,18 @@ export default function AuthForm() {
                   options={["user", "super user", "admin"]}
                 />
                 {errors.role && <SelectError>{errors.role}</SelectError>}
+              </SelectWrapper>
+
+              <SelectWrapper>
+                <SelectSmall
+                  name="department"
+                  value={formValues.department}
+                  onChange={handleDepartmentChange}
+                  options={["1", "2", "3"]}
+                />
+                {errors.department && (
+                  <SelectError>{errors.department}</SelectError>
+                )}
               </SelectWrapper>
             </>
           )}
