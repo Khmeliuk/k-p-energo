@@ -3,13 +3,7 @@ import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useAllTaskQuery } from "../../service/reactQuery/reactQuery";
 import ViewToggle from "./ViewToggle";
-
-const statuses = [
-  { label: "Виконані", value: "done" },
-  { label: "Не виконані", value: "incomplete" },
-  { label: "Заплановані", value: "planned" },
-  { label: "Відкладенні", value: "postpone" },
-];
+import ResponsiveStatusButtons from "./ResponsiveStatusButtons ";
 
 const TaskFilterPanel = ({
   onFilterChange,
@@ -57,18 +51,13 @@ const TaskFilterPanel = ({
   return (
     <Wrapper>
       <Section>
-        <Label>Статуси задач:</Label>
         {!isLoading && (
           <StatusList>
-            {statuses.map(({ label, value }) => (
-              <StatusButton
-                key={value}
-                selected={selectedStatuses.includes(value)}
-                onClick={() => toggleStatus(value)}
-              >
-                {label}: {stateCount?.data?.statusCount[value] || 0}
-              </StatusButton>
-            ))}
+            <ResponsiveStatusButtons
+              selectedStatuses={selectedStatuses}
+              toggleStatus={toggleStatus}
+              stateCount={stateCount}
+            />
           </StatusList>
         )}
       </Section>

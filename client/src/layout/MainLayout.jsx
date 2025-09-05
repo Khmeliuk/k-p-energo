@@ -4,7 +4,6 @@ import styled, { keyframes } from "styled-components";
 import { useGetCurrentUser } from "../service/reactQuery/reactQuery";
 import { useQueryClient } from "@tanstack/react-query";
 import { logout } from "../service/API/axios";
-import { Logout } from "@mui/icons-material";
 
 const user = {
   avatarUrl: "https://i.pravatar.cc/300",
@@ -123,12 +122,12 @@ const MainLayout = () => {
             <FooterText>Building amazing experiences together</FooterText>
           </FooterSection>
 
-          <FooterSection>
+          {/* <FooterSection>
             <FooterTitle>Quick Links</FooterTitle>
             <FooterLink>About</FooterLink>
             <FooterLink>Support</FooterLink>
             <FooterLink>Privacy</FooterLink>
-          </FooterSection>
+          </FooterSection> */}
 
           <FooterSection>
             <FooterTitle>Contact</FooterTitle>
@@ -138,7 +137,7 @@ const MainLayout = () => {
         </FooterContent>
 
         <FooterBottom>
-          <FooterText>© 2024 My Application. All rights reserved.</FooterText>
+          <FooterText>© 2025 K-P Energo. All rights reserved.</FooterText>
         </FooterBottom>
       </Footer>
     </Wrapper>
@@ -432,142 +431,6 @@ const Overlay = styled.div`
   @media (min-width: 1024px) {
     display: none;
   }
-`;
-
-const Content = styled.main`
-  flex: 1;
-  padding: 1rem;
-  overflow-x: hidden;
-
-  @media (min-width: 768px) {
-    padding: 2rem;
-  }
-
-  @media (min-width: 1024px) {
-    margin-left: 0;
-  }
-`;
-
-const ContentHeader = styled.div`
-  margin-bottom: 2rem;
-
-  h2 {
-    font-size: 1.875rem;
-    font-weight: 700;
-    color: #1e293b;
-    margin: 0 0 0.5rem 0;
-  }
-
-  p {
-    color: #64748b;
-    font-size: 1rem;
-    margin: 0;
-  }
-`;
-
-const ContentGrid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem;
-  margin-bottom: 2rem;
-
-  @media (min-width: 640px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @media (min-width: 1024px) {
-    grid-template-columns: repeat(4, 1fr);
-  }
-`;
-
-const Card = styled.div`
-  background: white;
-  border-radius: 0.75rem;
-  padding: 1.5rem;
-  border: 1px solid #e2e8f0;
-  transition: all 0.2s;
-
-  &:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transform: translateY(-2px);
-  }
-`;
-
-const CardTitle = styled.h3`
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #64748b;
-  margin: 0 0 0.5rem 0;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-`;
-
-const CardContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-`;
-
-const CardNumber = styled.div`
-  font-size: 2rem;
-  font-weight: 700;
-  color: #1e293b;
-`;
-
-const CardDescription = styled.div`
-  font-size: 0.875rem;
-  color: #64748b;
-`;
-
-const Section = styled.section`
-  background: white;
-  border-radius: 0.75rem;
-  padding: 1.5rem;
-  border: 1px solid #e2e8f0;
-  margin-bottom: 2rem;
-`;
-
-const SectionTitle = styled.h3`
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #1e293b;
-  margin: 0 0 1rem 0;
-`;
-
-const ActivityList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-`;
-
-const ActivityItem = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem;
-  border-radius: 0.5rem;
-  transition: background-color 0.2s;
-
-  &:hover {
-    background-color: #f8fafc;
-  }
-`;
-
-const ActivityIcon = styled.span`
-  font-size: 1.125rem;
-  width: 24px;
-  text-align: center;
-`;
-
-const ActivityText = styled.span`
-  flex: 1;
-  color: #334155;
-  font-size: 0.875rem;
-`;
-
-const ActivityTime = styled.span`
-  color: #64748b;
-  font-size: 0.75rem;
 `;
 
 const Footer = styled.footer`

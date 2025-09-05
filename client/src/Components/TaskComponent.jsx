@@ -43,17 +43,12 @@ const TaskComponent = () => {
     getFilterTasks(filter);
   }, [filter, dateSort]);
 
-  useEffect(() => {
-    if (isFetched) {
-      console.log("====================================");
-      console.log(isFetched, "isFetched");
-      console.log("====================================");
-    }
-  });
-
   const onFilterChange = (filterArr) => {
     setFilter(filterArr);
   };
+  console.log("====================================");
+  console.log(tasks, "filterTasks");
+  console.log("====================================");
 
   if (isLoading && currentUserIsLoading) return <div>Loading tasks...</div>;
   if (isError) return <div>Error loading tasks.</div>;

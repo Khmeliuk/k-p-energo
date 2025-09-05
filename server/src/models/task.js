@@ -7,7 +7,7 @@ const TaskSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["виконується", "виконанно", "скасовано"],
+    enum: ["виконується", "виконанно", "скасовано", "відкладенно"],
     required: [true, "status is required"],
   },
   department: {

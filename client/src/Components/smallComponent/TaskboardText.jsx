@@ -53,6 +53,7 @@ const getStatusText = (status) => {
 export default function TaskboardText({ tasks, isFetched }) {
   const [expandedTasks, setExpandedTasks] = useState(new Set());
   const [openDropdown, setOpenDropdown] = useState(null);
+  const [localTasks, setLocalTasks] = useState(tasks || []); // Локальна копія
 
   const updateTaskStatusMutation = useUpdateTaskStatus();
 
@@ -67,6 +68,12 @@ export default function TaskboardText({ tasks, isFetched }) {
     setExpandedTasks(newExpanded);
   };
 
+  useEffect(() => {
+    if (tasks) {
+      setLocalTasks(tasks);
+    }
+  }, [tasks]);
+
   const toggleDropdown = (index, e) => {
     e.stopPropagation();
     setOpenDropdown(openDropdown === index ? null : index);
@@ -74,8 +81,7 @@ export default function TaskboardText({ tasks, isFetched }) {
 
   const handleStatusChange = (taskIndex, newStatus, e, id) => {
     e.stopPropagation();
-    console.log(id, newStatus);
-    updateTaskStatusMutation.mutate({ taskId: id, newStatus: newStatus });
+    updateTaskStatusMutation.mutate({ taskId: id, newStatus });
 
     setOpenDropdown(null);
   };
@@ -93,15 +99,22 @@ export default function TaskboardText({ tasks, isFetched }) {
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
-  console.log(tasks);
+
+  const tasksToRender = localTasks;
 
   return (
     isFetched && (
       <TaskList>
-        {tasks?.map((task, index) => (
+        {tasksToRender?.map((task, index) => (
           <TaskItem
             key={task._id}
             status={task.status}
+            className={
+              updateTaskStatusMutation.isLoading &&
+              updateTaskStatusMutation.variables?.taskId === task._id
+                ? "updating"
+                : ""
+            }
             onClick={(e) => handleTaskClick(index, e)}
           >
             <TaskHeader>
@@ -212,6 +225,41 @@ export default function TaskboardText({ tasks, isFetched }) {
   );
 }
 
+const getStatusStyles = (status) => {
+  switch (status) {
+    case "done":
+      return `
+        background: linear-gradient(135deg, #d4edda 0%, #f8fff9 100%);
+        border: 2px solid #28a745;
+        box-shadow: 0 4px 15px rgba(40, 167, 69, 0.15);
+      `;
+    case "incomplete":
+      return `
+        background: linear-gradient(135deg, #f8d7da 0%, #fff5f5 100%);
+        border: 2px solid #dc3545;
+        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.15);
+      `;
+    case "planned":
+      return `
+        background: linear-gradient(135deg, #cce7ff 0%, #f0f8ff 100%);
+        border: 2px solid #007bff;
+        box-shadow: 0 4px 15px rgba(0, 123, 255, 0.15);
+      `;
+    case "postpone":
+      return `
+        background: linear-gradient(135deg, #f3e5f5 0%, #faf6fb 100%);
+        border: 2px solid #9c27b0;
+        box-shadow: 0 4px 15px rgba(156, 39, 176, 0.15);
+      `;
+    default:
+      return `
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        border: 2px solid #e9ecef;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      `;
+  }
+};
+
 // Анімація появи знизу
 const fadeInUp = keyframes`
   from {
@@ -281,8 +329,9 @@ const TaskItem = styled.div`
   border-radius: 8px;
   animation: ${fadeInUp} 0.3s ease forwards;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease-in-out;
   overflow: hidden;
+  ${({ status }) => getStatusStyles(status)}
 
   @media (min-width: 768px) {
     padding: 20px;
