@@ -49,7 +49,7 @@ const MultipleSelectChip = ({ name, value = [], onChange, options }) => {
             <Placeholder>Оберіть задачі</Placeholder>
           )}
         </SelectedChips>
-        <Arrow isOpen={isOpen}>▾</Arrow>
+        <Arrow $isOpen={isOpen}>▾</Arrow>
       </SelectBox>
 
       <AnimatePresence>
@@ -150,7 +150,7 @@ const Placeholder = styled.span`
 
 const Arrow = styled.span`
   transition: transform 0.2s ease;
-  transform: ${({ isOpen }) => (isOpen ? "rotate(180deg)" : "rotate(0deg)")};
+  transform: ${({ $isOpen }) => ($isOpen ? "rotate(180deg)" : "rotate(0deg)")};
 `;
 
 const OptionsList = styled.ul`

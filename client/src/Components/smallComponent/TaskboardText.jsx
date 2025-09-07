@@ -1,4 +1,4 @@
-import styled, { keyframes } from "styled-components";
+import styled, { keyframes, css } from "styled-components";
 import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import {
@@ -45,15 +45,166 @@ const getStatusText = (status) => {
       return "Planned";
     case "postpone":
       return "Postponed";
+    case "no status":
+      return "No Status";
     default:
       return "Unknown";
   }
 };
 
-export default function TaskboardText({ tasks, isFetched }) {
+// Анімації (визначені перед використанням)
+const fadeInUp = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+
+const fadeOutDown = keyframes`
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    max-height: 500px;
+    margin-bottom: 12px;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+    max-height: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+`;
+
+const expandContent = keyframes`
+  from {
+    max-height: 0;
+    opacity: 0;
+  }
+  to {
+    max-height: 300px;
+    opacity: 1;
+  }
+`;
+
+const pulse = keyframes`
+  0% {
+    box-shadow: 0 2px 8px rgba(255, 165, 0, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 16px rgba(255, 165, 0, 0.5);
+  }
+  100% {
+    box-shadow: 0 2px 8px rgba(255, 165, 0, 0.3);
+  }
+`;
+
+const slideDown = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+`;
+
+// Функція для отримання стилів статусу
+const getStatusStyles = (status) => {
+  switch (status) {
+    case "done":
+      return css`
+        background: linear-gradient(135deg, #d4edda 0%, #f8fff9 100%);
+        border: 1px solid #28a745;
+        box-shadow: 0 2px 8px rgba(40, 167, 69, 0.1);
+
+        @media (min-width: 768px) {
+          border: 2px solid #28a745;
+          box-shadow: 0 4px 15px rgba(40, 167, 69, 0.15);
+        }
+      `;
+    case "incomplete":
+      return css`
+        background: linear-gradient(135deg, #f8d7da 0%, #fff5f5 100%);
+        border: 1px solid #dc3545;
+        box-shadow: 0 2px 8px rgba(220, 53, 69, 0.1);
+
+        @media (min-width: 768px) {
+          border: 2px solid #dc3545;
+          box-shadow: 0 4px 15px rgba(220, 53, 69, 0.15);
+        }
+      `;
+    case "in-progress":
+      return css`
+        background: linear-gradient(135deg, #fff3cd 0%, #fffbf0 100%);
+        border: 1px solid #ffc107;
+        box-shadow: 0 2px 8px rgba(255, 193, 7, 0.1);
+        animation: ${pulse} 2s infinite;
+
+        @media (min-width: 768px) {
+          border: 2px solid #ffc107;
+          box-shadow: 0 4px 15px rgba(255, 193, 7, 0.15);
+        }
+      `;
+    case "planned":
+      return css`
+        background: linear-gradient(135deg, #cce7ff 0%, #f0f8ff 100%);
+        border: 1px solid #007bff;
+        box-shadow: 0 2px 8px rgba(0, 123, 255, 0.1);
+
+        @media (min-width: 768px) {
+          border: 2px solid #007bff;
+          box-shadow: 0 4px 15px rgba(0, 123, 255, 0.15);
+        }
+      `;
+    case "postpone":
+      return css`
+        background: linear-gradient(135deg, #f3e5f5 0%, #faf6fb 100%);
+        border: 1px solid #9c27b0;
+        box-shadow: 0 2px 8px rgba(156, 39, 176, 0.1);
+
+        @media (min-width: 768px) {
+          border: 2px solid #9c27b0;
+          box-shadow: 0 4px 15px rgba(156, 39, 176, 0.15);
+        }
+      `;
+    case "no status":
+      return css`
+        background: linear-gradient(135deg, #e9ecef 0%, #f8f9fa 100%);
+        border: 1px solid #6c757d;
+        box-shadow: 0 2px 8px rgba(108, 117, 125, 0.1);
+
+        @media (min-width: 768px) {
+          border: 2px solid #6c757d;
+          box-shadow: 0 4px 15px rgba(108, 117, 125, 0.15);
+        }
+      `;
+    default:
+      return css`
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        border: 1px solid #e9ecef;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+        @media (min-width: 768px) {
+          border: 2px solid #e9ecef;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+      `;
+  }
+};
+
+export default function TaskboardText({ tasks = [], isFetched }) {
   const [expandedTasks, setExpandedTasks] = useState(new Set());
   const [openDropdown, setOpenDropdown] = useState(null);
-  const [localTasks, setLocalTasks] = useState(tasks || []); // Локальна копія
+  const [localTasks, setLocalTasks] = useState(tasks);
+  const [removingTasks, setRemovingTasks] = useState(new Set());
+  const [displayTasks, setDisplayTasks] = useState(tasks);
 
   const updateTaskStatusMutation = useUpdateTaskStatus();
 
@@ -70,9 +221,27 @@ export default function TaskboardText({ tasks, isFetched }) {
 
   useEffect(() => {
     if (tasks) {
-      setLocalTasks(tasks);
+      const oldTaskIds = new Set(localTasks.map((task) => task._id));
+      const newTaskIds = new Set(tasks.map((task) => task._id));
+      const tasksToRemove = localTasks.filter(
+        (task) => !newTaskIds.has(task._id)
+      );
+
+      if (tasksToRemove.length > 0) {
+        const removingIds = new Set(tasksToRemove.map((task) => task._id));
+        setRemovingTasks(removingIds);
+
+        setTimeout(() => {
+          setDisplayTasks(tasks);
+          setLocalTasks(tasks);
+          setRemovingTasks(new Set());
+        }, 300);
+      } else {
+        setDisplayTasks(tasks);
+        setLocalTasks(tasks);
+      }
     }
-  }, [tasks]);
+  }, [tasks, localTasks]);
 
   const toggleDropdown = (index, e) => {
     e.stopPropagation();
@@ -82,33 +251,29 @@ export default function TaskboardText({ tasks, isFetched }) {
   const handleStatusChange = (taskIndex, newStatus, e, id) => {
     e.stopPropagation();
     updateTaskStatusMutation.mutate({ taskId: id, newStatus });
-
     setOpenDropdown(null);
   };
 
   const handleTaskClick = (index, e) => {
-    // Закриваємо dropdown якщо клікнули поза ним
     if (openDropdown !== null && !e.target.closest("[data-dropdown]")) {
       setOpenDropdown(null);
     }
   };
 
-  // Закриваємо dropdown при кліку поза компонентом
   useEffect(() => {
     const handleClickOutside = () => setOpenDropdown(null);
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
-  const tasksToRender = localTasks;
-
   return (
     isFetched && (
       <TaskList>
-        {tasksToRender?.map((task, index) => (
+        {displayTasks?.map((task, index) => (
           <TaskItem
             key={task._id}
             status={task.status}
+            $isRemoving={removingTasks.has(task._id)}
             className={
               updateTaskStatusMutation.isLoading &&
               updateTaskStatusMutation.variables?.taskId === task._id
@@ -163,12 +328,12 @@ export default function TaskboardText({ tasks, isFetched }) {
               <InfoItem>
                 <FiUser size={14} style={{ color: "#6c757d" }} />
                 <InfoLabel>Owner:</InfoLabel>
-                <InfoValue>{task?.owner?.name}</InfoValue>
+                <InfoValue>{task?.owner || "No owner"}</InfoValue>
               </InfoItem>
               <InfoItem>
                 <FiBriefcase size={14} style={{ color: "#6c757d" }} />
                 <InfoLabel>Department:</InfoLabel>
-                <InfoValue>{task?.department}</InfoValue>
+                <InfoValue>{task?.department || "No department"}</InfoValue>
               </InfoItem>
               <InfoItem>
                 <FiCalendar size={14} style={{ color: "#6c757d" }} />
@@ -179,24 +344,30 @@ export default function TaskboardText({ tasks, isFetched }) {
 
             {expandedTasks.has(index) && (
               <ExpandedContent>
-                {task?.task && (
-                  <TaskDescription status={task.status}>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "6px",
-                        marginBottom: "8px",
-                        fontSize: "12px",
-                        fontWeight: "600",
-                      }}
-                    >
-                      <FiFileText size={14} />
-                      Task Description:
-                    </div>
-                    {task.task}
-                  </TaskDescription>
-                )}
+                {task?.task &&
+                  Array.isArray(task.task) &&
+                  task.task.length > 0 && (
+                    <TaskDescription status={task.status}>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "6px",
+                          marginBottom: "8px",
+                          fontSize: "12px",
+                          fontWeight: "600",
+                        }}
+                      >
+                        <FiFileText size={14} />
+                        Task Description:
+                      </div>
+                      {task.task.map((taskItem, idx) => (
+                        <div key={idx} style={{ marginBottom: "4px" }}>
+                          {taskItem}
+                        </div>
+                      ))}
+                    </TaskDescription>
+                  )}
 
                 {task?.address && (
                   <InfoItem style={{ marginBottom: "12px" }}>
@@ -211,10 +382,12 @@ export default function TaskboardText({ tasks, isFetched }) {
                     <FiCalendar size={12} />
                     <strong>Created:</strong> {task.createDate}
                   </DateItem>
-                  <DateItem>
-                    <FiClock size={12} />
-                    <strong>Deadline:</strong> {task.dateToEndTask}
-                  </DateItem>
+                  {task.dateToEndTask && (
+                    <DateItem>
+                      <FiClock size={12} />
+                      <strong>Deadline:</strong> {task.dateToEndTask}
+                    </DateItem>
+                  )}
                 </DateInfo>
               </ExpandedContent>
             )}
@@ -224,90 +397,6 @@ export default function TaskboardText({ tasks, isFetched }) {
     )
   );
 }
-
-const getStatusStyles = (status) => {
-  switch (status) {
-    case "done":
-      return `
-        background: linear-gradient(135deg, #d4edda 0%, #f8fff9 100%);
-        border: 2px solid #28a745;
-        box-shadow: 0 4px 15px rgba(40, 167, 69, 0.15);
-      `;
-    case "incomplete":
-      return `
-        background: linear-gradient(135deg, #f8d7da 0%, #fff5f5 100%);
-        border: 2px solid #dc3545;
-        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.15);
-      `;
-    case "planned":
-      return `
-        background: linear-gradient(135deg, #cce7ff 0%, #f0f8ff 100%);
-        border: 2px solid #007bff;
-        box-shadow: 0 4px 15px rgba(0, 123, 255, 0.15);
-      `;
-    case "postpone":
-      return `
-        background: linear-gradient(135deg, #f3e5f5 0%, #faf6fb 100%);
-        border: 2px solid #9c27b0;
-        box-shadow: 0 4px 15px rgba(156, 39, 176, 0.15);
-      `;
-    default:
-      return `
-        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-        border: 2px solid #e9ecef;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-      `;
-  }
-};
-
-// Анімація появи знизу
-const fadeInUp = keyframes`
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-`;
-
-// Анімація розкриття контенту
-const expandContent = keyframes`
-  from {
-    max-height: 0;
-    opacity: 0;
-  }
-  to {
-    max-height: 300px;
-    opacity: 1;
-  }
-`;
-
-// Анімація пульсації для активних завдань
-const pulse = keyframes`
-  0% {
-    box-shadow: 0 2px 8px rgba(255, 165, 0, 0.3);
-  }
-  50% {
-    box-shadow: 0 4px 16px rgba(255, 165, 0, 0.5);
-  }
-  100% {
-    box-shadow: 0 2px 8px rgba(255, 165, 0, 0.3);
-  }
-`;
-
-// Анімація для dropdown
-const slideDown = keyframes`
-  from {
-    opacity: 0;
-    transform: translateY(-8px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-`;
 
 const TaskList = styled.div`
   display: flex;
@@ -327,114 +416,36 @@ const TaskItem = styled.div`
   position: relative;
   padding: 12px;
   border-radius: 8px;
-  animation: ${fadeInUp} 0.3s ease forwards;
   cursor: pointer;
   transition: all 0.3s ease-in-out;
   overflow: hidden;
   ${({ status }) => getStatusStyles(status)}
 
+  ${({ $isRemoving }) =>
+    $isRemoving
+      ? css`
+          animation: ${fadeOutDown} 0.3s ease forwards;
+        `
+      : css`
+          animation: ${fadeInUp} 0.3s ease forwards;
+        `}
+
   @media (min-width: 768px) {
     padding: 20px;
     border-radius: 12px;
-    transition: all 0.3s ease;
   }
 
-  ${({ status }) => {
-    switch (status) {
-      case "done":
-        return `
-          background: linear-gradient(135deg, #d4edda 0%, #f8fff9 100%);
-          border: 1px solid #28a745;
-          box-shadow: 0 2px 8px rgba(40, 167, 69, 0.1);
-          
-          @media (min-width: 768px) {
-            border: 2px solid #28a745;
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.15);
-          }
-        `;
-      case "incomplete":
-        return `
-          background: linear-gradient(135deg, #f8d7da 0%, #fff5f5 100%);
-          border: 1px solid #dc3545;
-          box-shadow: 0 2px 8px rgba(220, 53, 69, 0.1);
-          
-          @media (min-width: 768px) {
-            border: 2px solid #dc3545;
-            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.15);
-          }
-        `;
-      case "in-progress":
-        return `
-          background: linear-gradient(135deg, #fff3cd 0%, #fffbf0 100%);
-          border: 1px solid #ffc107;
-          box-shadow: 0 2px 8px rgba(255, 193, 7, 0.1);
-          animation: ${pulse} 2s infinite;
-          
-          @media (min-width: 768px) {
-            border: 2px solid #ffc107;
-            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.15);
-          }
-        `;
-      case "planned":
-        return `
-          background: linear-gradient(135deg, #cce7ff 0%, #f0f8ff 100%);
-          border: 1px solid #007bff;
-          box-shadow: 0 2px 8px rgba(0, 123, 255, 0.1);
-          
-          @media (min-width: 768px) {
-            border: 2px solid #007bff;
-            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.15);
-          }
-        `;
-      case "postpone":
-        return `
-          background: linear-gradient(135deg, #f3e5f5 0%, #faf6fb 100%);
-          border: 1px solid #9c27b0;
-          box-shadow: 0 2px 8px rgba(156, 39, 176, 0.1);
-          
-          @media (min-width: 768px) {
-            border: 2px solid #9c27b0;
-            box-shadow: 0 4px 15px rgba(156, 39, 176, 0.15);
-          }
-        `;
-      default:
-        return `
-          background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-          border: 1px solid #e9ecef;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-          
-          @media (min-width: 768px) {
-            border: 2px solid #e9ecef;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-          }
-        `;
-    }
-  }}
+  ${({ $isRemoving }) =>
+    !$isRemoving &&
+    css`
+      &:hover {
+        transform: translateY(-1px);
 
-  &:hover {
-    transform: translateY(-1px);
-
-    @media (min-width: 768px) {
-      transform: translateY(-4px) scale(1.01);
-    }
-
-    ${({ status }) => {
-      switch (status) {
-        case "done":
-          return `box-shadow: 0 4px 16px rgba(40, 167, 69, 0.2);`;
-        case "incomplete":
-          return `box-shadow: 0 4px 16px rgba(220, 53, 69, 0.2);`;
-        case "in-progress":
-          return `box-shadow: 0 4px 16px rgba(255, 193, 7, 0.2);`;
-        case "planned":
-          return `box-shadow: 0 4px 16px rgba(0, 123, 255, 0.2);`;
-        case "postpone":
-          return `box-shadow: 0 4px 16px rgba(156, 39, 176, 0.2);`;
-        default:
-          return `box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);`;
+        @media (min-width: 768px) {
+          transform: translateY(-4px) scale(1.01);
+        }
       }
-    }}
-  }
+    `}
 
   &::before {
     content: "";
@@ -451,17 +462,33 @@ const TaskItem = styled.div`
     ${({ status }) => {
       switch (status) {
         case "done":
-          return `background: #28a745;`;
+          return css`
+            background: #28a745;
+          `;
         case "incomplete":
-          return `background: #dc3545;`;
+          return css`
+            background: #dc3545;
+          `;
         case "in-progress":
-          return `background: #ffc107;`;
+          return css`
+            background: #ffc107;
+          `;
         case "planned":
-          return `background: #007bff;`;
+          return css`
+            background: #007bff;
+          `;
         case "postpone":
-          return `background: #9c27b0;`;
+          return css`
+            background: #9c27b0;
+          `;
+        case "no status":
+          return css`
+            background: #6c757d;
+          `;
         default:
-          return `background: #6c757d;`;
+          return css`
+            background: #6c757d;
+          `;
       }
     }}
   }
@@ -552,37 +579,43 @@ const StatusBadge = styled.div`
   ${({ status }) => {
     switch (status) {
       case "done":
-        return `
+        return css`
           background: rgba(40, 167, 69, 0.2);
           color: #155724;
           border: 1px solid rgba(40, 167, 69, 0.3);
         `;
       case "incomplete":
-        return `
+        return css`
           background: rgba(220, 53, 69, 0.2);
           color: #721c24;
           border: 1px solid rgba(220, 53, 69, 0.3);
         `;
       case "in-progress":
-        return `
+        return css`
           background: rgba(255, 193, 7, 0.2);
           color: #856404;
           border: 1px solid rgba(255, 193, 7, 0.3);
         `;
       case "planned":
-        return `
+        return css`
           background: rgba(0, 123, 255, 0.2);
           color: #004085;
           border: 1px solid rgba(0, 123, 255, 0.3);
         `;
       case "postpone":
-        return `
+        return css`
           background: rgba(156, 39, 176, 0.2);
           color: #4a148c;
           border: 1px solid rgba(156, 39, 176, 0.3);
         `;
+      case "no status":
+        return css`
+          background: rgba(108, 117, 125, 0.2);
+          color: #495057;
+          border: 1px solid rgba(108, 117, 125, 0.3);
+        `;
       default:
-        return `
+        return css`
           background: rgba(108, 117, 125, 0.2);
           color: #495057;
           border: 1px solid rgba(108, 117, 125, 0.3);
@@ -600,7 +633,9 @@ const StatusDropdown = styled.div`
   border: 1px solid #dee2e6;
   border-radius: 8px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-  animation: ${slideDown} 0.2s ease forwards;
+  ${css`
+    animation: ${slideDown} 0.2s ease forwards;
+  `}
   min-width: 140px;
   overflow: hidden;
 
@@ -632,13 +667,22 @@ const StatusOption = styled.div`
     if ($isSelected) {
       switch (status) {
         case "done":
-          return `background: rgba(40, 167, 69, 0.1); color: #155724;`;
+          return css`
+            background: rgba(40, 167, 69, 0.1);
+            color: #155724;
+          `;
         case "postpone":
-          return `background: rgba(156, 39, 176, 0.1); color: #4a148c;`;
+          return css`
+            background: rgba(156, 39, 176, 0.1);
+            color: #4a148c;
+          `;
         default:
-          return `background: #f8f9fa;`;
+          return css`
+            background: #f8f9fa;
+          `;
       }
     }
+    return "";
   }}
 `;
 
@@ -694,11 +738,13 @@ const InfoValue = styled.span`
 `;
 
 const ExpandedContent = styled.div`
-  animation: ${expandContent} 0.3s ease forwards;
   overflow: hidden;
   margin-top: 12px;
   padding-top: 12px;
   border-top: 1px solid rgba(0, 0, 0, 0.1);
+  ${css`
+    animation: ${expandContent} 0.3s ease forwards;
+  `}
 
   @media (min-width: 768px) {
     margin-top: 16px;
@@ -722,23 +768,38 @@ const TaskDescription = styled.div`
     line-height: 1.6;
   }
 
-  border-left: 3px solid
-    ${({ status }) => {
-      switch (status) {
-        case "done":
-          return "#28a745";
-        case "incomplete":
-          return "#dc3545";
-        case "in-progress":
-          return "#ffc107";
-        case "planned":
-          return "#007bff";
-        case "postpone":
-          return "#9c27b0";
-        default:
-          return "#6c757d";
-      }
-    }};
+  ${({ status }) => {
+    switch (status) {
+      case "done":
+        return css`
+          border-left: 3px solid #28a745;
+        `;
+      case "incomplete":
+        return css`
+          border-left: 3px solid #dc3545;
+        `;
+      case "in-progress":
+        return css`
+          border-left: 3px solid #ffc107;
+        `;
+      case "planned":
+        return css`
+          border-left: 3px solid #007bff;
+        `;
+      case "postpone":
+        return css`
+          border-left: 3px solid #9c27b0;
+        `;
+      case "no status":
+        return css`
+          border-left: 3px solid #6c757d;
+        `;
+      default:
+        return css`
+          border-left: 3px solid #6c757d;
+        `;
+    }
+  }}
 `;
 
 const DateInfo = styled.div`
@@ -783,57 +844,27 @@ const StatusIcon = styled.span`
   }
 `;
 
-// PropTypes для TaskboardText компонента
 TaskboardText.propTypes = {
-  // Масив завдань
   tasks: PropTypes.arrayOf(
     PropTypes.shape({
-      // Статус завдання
+      _id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
       status: PropTypes.oneOf([
         "done",
         "incomplete",
         "in-progress",
         "planned",
         "postpone",
+        "no status",
       ]).isRequired,
-
-      // Інформація про власника завдання
-      owner: PropTypes.shape({
-        name: PropTypes.string.isRequired,
-        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-      }).isRequired,
-
-      // Департамент
-      department: PropTypes.string.isRequired,
-
-      // Опис завдання
-      task: PropTypes.string,
-
-      // Адреса (опціонально)
+      owner: PropTypes.string,
+      department: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      task: PropTypes.arrayOf(PropTypes.string),
       address: PropTypes.string,
-
-      // Дата створення
       createDate: PropTypes.string.isRequired,
-
-      // Дата завершення
-      dateToEndTask: PropTypes.string.isRequired,
-
-      // Додаткові поля (опціонально)
-      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      dateToEndTask: PropTypes.string,
       priority: PropTypes.oneOf(["low", "medium", "high"]),
       tags: PropTypes.arrayOf(PropTypes.string),
     })
   ),
-
-  // Чи завантажені дані
   isFetched: PropTypes.bool.isRequired,
-
-  // Колбек для зміни статусу
-  onStatusChange: PropTypes.func,
-};
-
-// Дефолтні значення
-TaskboardText.defaultProps = {
-  tasks: [],
-  onStatusChange: null,
 };

@@ -39,9 +39,11 @@ export const useUpdateTaskStatus = () => {
       const previousTasks = queryClient.getQueryData(["tasks"]);
 
       queryClient.setQueryData(["tasks"], (old) => {
-        return old?.data?.tasks?.map((task) => {
+        return old?.tasks?.map((task) => {
           const newTask = task._id === taskId ? { ...task, newStatus } : task;
-
+          console.log("====================================");
+          console.log({ previousTasks }, "newTask");
+          console.log("====================================");
           return newTask;
         });
       });

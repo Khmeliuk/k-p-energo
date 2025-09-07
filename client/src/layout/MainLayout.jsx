@@ -50,7 +50,7 @@ const MainLayout = () => {
           <MenuButton onClick={toggleSidebar}>
             <MenuIcon />
           </MenuButton>
-          <Title>K-P Energo</Title>
+          <Title onClick={() => navigate("/")}>K-P Energo</Title>
         </HeaderLeft>
 
         <UserInfo onClick={toggleMenu}>
@@ -62,9 +62,7 @@ const MainLayout = () => {
 
         {menuOpen && (
           <Dropdown>
-            <MenuItem onClick={() => handleMenuClick("Profile")}>
-              Profile
-            </MenuItem>
+            <MenuItem onClick={() => navigate("Profile")}>Profile</MenuItem>
             <MenuItem onClick={() => handleMenuClick("Settings")}>
               Settings
             </MenuItem>
@@ -77,7 +75,7 @@ const MainLayout = () => {
 
       <MainContainer>
         {/* Sidebar */}
-        <Sidebar isOpen={sidebarOpen}>
+        <Sidebar $isOpen={sidebarOpen}>
           <SidebarHeader>
             <SidebarTitle>Navigation</SidebarTitle>
             <CloseButton onClick={toggleSidebar}>×</CloseButton>
@@ -118,7 +116,7 @@ const MainLayout = () => {
       <Footer>
         <FooterContent>
           <FooterSection>
-            <FooterTitle>My Application</FooterTitle>
+            <FooterTitle>K-P Energo</FooterTitle>
             <FooterText>Building amazing experiences together</FooterText>
           </FooterSection>
 
@@ -246,6 +244,8 @@ const MenuIcon = styled.div`
 const Title = styled.h1`
   font-size: 1.25rem;
   margin: 0;
+  cursor: pointer;
+  user-select: none;
 
   @media (min-width: 768px) {
     font-size: 1.5rem;
@@ -332,7 +332,7 @@ const Sidebar = styled.aside`
   background-color: white;
   border-right: 1px solid #e2e8f0;
   z-index: 999;
-  transform: translateX(${(props) => (props.isOpen ? "0" : "-100%")});
+  transform: translateX(${(props) => (props.$isOpen ? "0" : "-100%")});
   transition: transform 0.3s ease;
   padding-top: 80px;
   overflow-y: auto;

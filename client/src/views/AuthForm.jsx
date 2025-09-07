@@ -114,7 +114,7 @@ export default function AuthForm() {
         transition={{ duration: 0.6 }}
       >
         <Icon>🔒</Icon>
-        <Title>{isLogin ? "Login" : "Register"}</Title>
+        <Title>{isLogin ? "Залогінитись" : "Зареєструватись"}</Title>
 
         <form onSubmit={handleSubmit} autoComplete="off">
           {!isLogin && (
@@ -122,7 +122,7 @@ export default function AuthForm() {
               <InputWrapper>
                 <Input
                   name="name"
-                  placeholder="Name"
+                  placeholder="Ім'я"
                   value={formValues.name}
                   onChange={handleChange}
                   $hasError={!!errors.name}
@@ -133,7 +133,7 @@ export default function AuthForm() {
               <InputWrapper>
                 <Input
                   name="lastName"
-                  placeholder="Last Name"
+                  placeholder="Фамілія"
                   value={formValues.lastName}
                   onChange={handleChange}
                   $hasError={!!errors.lastName}
@@ -194,7 +194,7 @@ export default function AuthForm() {
           <InputWrapper>
             <Input
               name="password"
-              placeholder="Password"
+              placeholder="Пароль"
               type={showPassword ? "text" : "password"}
               value={formValues.password}
               onChange={handleChange}
@@ -214,7 +214,7 @@ export default function AuthForm() {
             <InputWrapper>
               <Input
                 name="confirmPassword"
-                placeholder="Confirm Password"
+                placeholder="Повторіть пароль"
                 type={showConfirmPassword ? "text" : "password"}
                 value={formValues.confirmPassword}
                 onChange={handleChange}
@@ -237,7 +237,7 @@ export default function AuthForm() {
             type="submit"
             disabled={loginMutation.isPending || registrationMutation.isPending}
           >
-            {isLogin ? "Login" : "Register"}
+            {isLogin ? "Увійти" : "Зареєструватись"}
           </SubmitButton>
 
           {(loginMutation.error || registrationMutation.error) && (
@@ -251,9 +251,7 @@ export default function AuthForm() {
           {errors.general && <ErrorInside>{errors.general}</ErrorInside>}
 
           <Toggle type="button" onClick={toggleForm}>
-            {isLogin
-              ? "Don't have an account? Register"
-              : "Already have an account? Login"}
+            {isLogin ? "Створити новий акаунт" : "Вже маєте акаунт? Увійти"}
           </Toggle>
         </form>
 

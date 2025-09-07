@@ -74,7 +74,7 @@ export default function SelectSmall({ options, name, onChange }) {
           transition={{ duration: 0.3 }}
         >
           <option value="" disabled>
-            {`Виберіть ${name}`}
+            {`Виберіть ${name === "role" ? "посаду" : "відділ"}`}
           </option>
           {options?.map((option) => (
             <option key={option} value={option}>

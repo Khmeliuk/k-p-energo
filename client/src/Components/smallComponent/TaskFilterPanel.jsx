@@ -104,6 +104,7 @@ const Wrapper = styled.div`
   background: #f9f9ff;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
   margin-bottom: 2rem;
+  height: 100%;
 `;
 
 const Section = styled.div`

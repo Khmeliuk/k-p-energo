@@ -7,6 +7,7 @@ import GlobalStyles from "./styled/globalStyle";
 import { Navigate, Route, Routes } from "react-router-dom";
 import ProtectedLayout from "./layout/ProtectionLayout";
 import TaskComponent from "./Components/TaskComponent";
+import UserProfilePage from "./views/Profile";
 
 const queryClient = new QueryClient();
 
@@ -19,6 +20,7 @@ function App() {
           <Route path="/auth" element={<AuthForm />} />
           <Route path="/" element={<ProtectedLayout />}>
             <Route path="tasks" element={<TaskComponent />} />
+            <Route path="Profile" element={<UserProfilePage />} />
             {/* <Route path="projects" element={<ProjectsComponent />} />
             <Route path="team" element={<TeamComponent />} /> */}
           </Route>
