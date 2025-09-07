@@ -74,7 +74,7 @@ const TaskFilterPanel = ({
 
       {children}
 
-      <Pagination>
+      {/* <Pagination>
         <PageButton
           disabled={currentPage === 1}
           onClick={() => onPageChange(currentPage - 1)}
@@ -90,7 +90,7 @@ const TaskFilterPanel = ({
         >
           Вперед →
         </PageButton>
-      </Pagination>
+      </Pagination> */}
     </Wrapper>
   );
 };
@@ -105,6 +105,7 @@ const Wrapper = styled.div`
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
   margin-bottom: 2rem;
   height: 100%;
+  margin: 0.5rem;
 `;
 
 const Section = styled.div`
