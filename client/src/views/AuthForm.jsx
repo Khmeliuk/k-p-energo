@@ -40,7 +40,6 @@ export default function AuthForm() {
     const { name, value } = e.target;
     setFormValues((prev) => ({ ...prev, [name]: value }));
 
-    console.log(formValues);
     setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
@@ -98,9 +97,6 @@ export default function AuthForm() {
     const payload = isLogin
       ? { email: formValues.email, password: formValues.password }
       : formValues;
-
-    console.log(payload);
-
     const mutation = isLogin ? loginMutation : registrationMutation;
 
     mutation.mutate(payload, {
