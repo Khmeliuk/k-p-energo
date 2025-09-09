@@ -25,6 +25,7 @@ export default function AuthForm() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const loginMutation = useAuthMutation(login);
   const registrationMutation = useAuthMutation(registration);
+
   const navigate = useNavigate();
 
   const toggleForm = () => {
@@ -38,6 +39,8 @@ export default function AuthForm() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormValues((prev) => ({ ...prev, [name]: value }));
+
+    console.log(formValues);
     setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 

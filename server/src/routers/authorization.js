@@ -24,7 +24,7 @@ export default async function authorization(fastify, opt) {
     fastify.route({
       method: "post",
       url: "/registration",
-      schema: registration,
+      // schema: registration,
       attachValidation: true,
       handler: registrationHandler,
     });

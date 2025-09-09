@@ -45,6 +45,8 @@ export const getUserHandler = async function (req, reply) {
 export const addUserHandler = async function (req, reply) {
   try {
     const newUser = req.body;
+    console.log(req.body);
+
     const addUser = await createOne(newUser);
     reply.status(201).send(addUser);
   } catch (error) {
