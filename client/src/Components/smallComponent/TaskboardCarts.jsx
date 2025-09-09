@@ -1,18 +1,18 @@
 import styled from "styled-components";
 import TaskCard from "./TaskCard";
 
-const TaskboardCarts = ({ tasks, isFetched }) => {
+const TaskboardCarts = ({ tasks = [], isFetched }) => {
   return (
     <TaskContainer>
       {isFetched &&
         tasks?.map((task) => (
           <TaskCard
-            key={task._id}
-            owner={task.owner}
-            department={task.department}
-            address={task.address}
-            date={task.date}
-            tasks={task.task}
+            key={task?._id}
+            // owner={task?.owner}
+            department={task?.department}
+            address={task?.address}
+            date={task?.date}
+            tasks={task?.task}
             comment={task?.comment}
             createDate={task?.createDate}
             dateToEndTask={task?.dateToEndTask}

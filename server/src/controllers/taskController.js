@@ -173,17 +173,17 @@ export const changeStatusHandler = async function (req, reply) {
     const { id, status } = req.body;
 
     req.server.patchValidation(req, allowedField);
-    console.log("====================================");
-    console.log(req.user, "req.body");
-    console.log("====================================");
+
     const update = { owner: req.user, patch: req.body };
+
     const patch = await updateOneTask(
-      { id, owner: req.user._id },
+      { id },
       { $set: { status }, $push: { update: update } },
       {
         new: true,
       }
     );
+
     if (!patch) {
       return reply.code(404).send("не знайшов");
     }

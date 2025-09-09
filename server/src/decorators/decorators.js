@@ -53,6 +53,10 @@ async function decoratorsPlugin(fastify, opt) {
         }
       });
 
+      console.log("====================================");
+      console.log(filteredUpdate, "filteredUpdate");
+      console.log("====================================");
+
       // Фільтруємо поля в $set (для MongoDB операцій)
       if (update.$set) {
         const filteredSet = {};

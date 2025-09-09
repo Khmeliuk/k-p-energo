@@ -60,11 +60,8 @@ export const updateOne = (id, data) => {
   return User.findOneAndUpdate({ _id: id }, data);
 };
 
-export const updateOneTask = ({ id, owner }, data, opt) => {
-  console.log("====================================");
-  console.log(owner, "updateOneTask");
-  console.log("====================================");
-  return Task.findOneAndUpdate({ _id: id, owner: owner }, data, opt);
+export const updateOneTask = ({ id }, data, opt) => {
+  return Task.findOneAndUpdate({ _id: id }, data, opt);
 };
 
 export const deleteOne = (id) => {

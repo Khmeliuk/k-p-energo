@@ -69,7 +69,7 @@ const TaskFilterPanel = ({
           <option value="new">Новіші</option>
           <option value="old">Старіші</option>
         </Select>
-        <ViewToggle onClick={toggleView} />
+        {/* <ViewToggle onClick={toggleView} /> */}
       </Section>
 
       {children}
