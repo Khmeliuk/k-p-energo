@@ -8,26 +8,24 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import ProtectedLayout from "./layout/ProtectionLayout";
 import TaskComponent from "./Components/TaskComponent";
 import UserProfilePage from "./views/Profile";
-
-const queryClient = new QueryClient();
+import { useSyncAuthAcrossTabs } from "./hooks/useSyncAuthAcrossTabs";
 
 function App() {
+  useSyncAuthAcrossTabs(); // слухаємо події з інших вкладок
   return (
     <StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <GlobalStyles />
-        <Routes>
-          <Route path="/auth" element={<AuthForm />} />
-          <Route path="/" element={<ProtectedLayout />}>
-            <Route path="tasks" element={<TaskComponent />} />
-            <Route path="Profile" element={<UserProfilePage />} />
-            {/* <Route path="projects" element={<ProjectsComponent />} />
+      <GlobalStyles />
+      <Routes>
+        <Route path="/auth" element={<AuthForm />} />
+        <Route path="/" element={<ProtectedLayout />}>
+          <Route path="tasks" element={<TaskComponent />} />
+          <Route path="Profile" element={<UserProfilePage />} />
+          {/* <Route path="projects" element={<ProjectsComponent />} />
             <Route path="team" element={<TeamComponent />} /> */}
-          </Route>
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
-        <ReactQueryDevtools />
-      </QueryClientProvider>
+        </Route>
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+      <ReactQueryDevtools />
     </StrictMode>
   );
 }

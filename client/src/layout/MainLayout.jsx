@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
 import { useGetCurrentUser } from "../service/reactQuery/reactQuery";
 import { useQueryClient } from "@tanstack/react-query";
 import { logout } from "../service/API/axios";
+import { useSyncAuthAcrossTabs } from "../hooks/useSyncAuthAcrossTabs";
+import { useClickOutside } from "../hooks/useClickOutside ";
 
 const user = {
   avatarUrl: "https://i.pravatar.cc/300",
@@ -13,21 +15,30 @@ const user = {
 const MainLayout = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { notifyAuthUpdate } = useSyncAuthAcrossTabs();
+  const menuRef = useRef(null);
 
   const navigate = useNavigate();
 
   const { data: currentUser } = useGetCurrentUser();
 
+  useClickOutside(menuRef, () => setMenuOpen(false), menuOpen);
   const toggleMenu = () => setMenuOpen((prev) => !prev);
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
 
   const queryClient = useQueryClient();
 
+  const syncLogout = async () => {
+    await logout(); // твій API-запит
+    queryClient.invalidateQueries(["user"]);
+    notifyAuthUpdate(); // повідомляємо інші вкладки
+  };
+
   const handleMenuClick = async (option) => {
     setMenuOpen(false);
     if (option === "Logout") {
       try {
-        await logout();
+        await syncLogout();
         queryClient.clear();
         navigate("/auth");
       } catch (error) {
@@ -40,6 +51,12 @@ const MainLayout = () => {
     console.log(`Navigating to: ${item}`);
     navigate(item);
     toggleSidebar();
+  };
+
+  const handleProfileClick = (e) => {
+    e.stopPropagation();
+    navigate("Profile");
+    toggleMenu();
   };
 
   return (
@@ -61,8 +78,8 @@ const MainLayout = () => {
         </UserInfo>
 
         {menuOpen && (
-          <Dropdown>
-            <MenuItem onClick={() => navigate("Profile")}>Profile</MenuItem>
+          <Dropdown ref={menuRef}>
+            <MenuItem onClick={handleProfileClick}>Profile</MenuItem>
             <MenuItem onClick={() => handleMenuClick("Settings")}>
               Settings
             </MenuItem>

@@ -21,9 +21,7 @@ if (process.env.NODE_ENV === "production") {
 export const getAllUserHandler = async function (req, reply) {
   try {
     const user = await findAll();
-    console.log("====================================");
-    console.log(user);
-    console.log("====================================");
+
     reply.status(200).send(user);
   } catch (error) {
     reply.status(404).send(error);
@@ -33,9 +31,6 @@ export const getUserHandler = async function (req, reply) {
   try {
     const params = req.params.id;
     const user = await findOne(params);
-    console.log("====================================");
-    console.log(user);
-    console.log("====================================");
     reply.status(200).send(user);
   } catch (error) {
     reply.status(404).send(error);
@@ -135,25 +130,28 @@ export const logoutHandler = async function (req, reply) {
 
 export const registrationHandler = async function (req, reply) {
   try {
-    const newUser = await createOne(req.body);
+    const user = await createOne(req.body);
     console.log("====================================");
-    console.log(newUser);
+    console.log(user);
     console.log("====================================");
     const token = req.server.jwt.sign({
-      _id: newUser._id,
-      name: newUser.name,
-      email: newUser.email,
-      role: newUser.role,
+      _id: user._id,
+      name: user.name,
+      lastName: user.lastName,
+      email: user.email,
+      role: user.role,
+      department: user.department,
     });
     reply
       .status(201)
       .setCookie("token", token, {
         httpOnly: true,
-        maxAge: 3600, // Час життя cookie в секундах (1 година)
-        path: "/", // Cookie буде доступне у всьому додатку
-        sameSite: "strict", // Захист від CSRF атак
+        sameSite: "None",
+        secure: true,
+        maxAge: 3600, // 1 година
+        path: "/",
       })
-      .send(newUser);
+      .send(user);
   } catch (error) {
     if (error.code === 11000) {
       reply.status(400).send(`${error.message}, email mast be unique`);

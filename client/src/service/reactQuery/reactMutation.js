@@ -1,13 +1,16 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createTask, patchStatus } from "../API/axios";
+import { useSyncAuthAcrossTabs } from "../../hooks/useSyncAuthAcrossTabs";
 
-export const useAuthMutation = function (fetchfunction) {
+export const useAuthMutation = function (fetchFunction) {
   const queryClient = useQueryClient();
+  const { notifyAuthUpdate } = useSyncAuthAcrossTabs();
 
   return useMutation({
-    mutationFn: fetchfunction,
+    mutationFn: fetchFunction,
     onSuccess: (data) => {
       queryClient.setQueryData(["user"], data);
+      notifyAuthUpdate(); // 🔔 повідомляємо інші вкладки
     },
     onError: (error) => {
       console.error("Auth error:", error);
@@ -41,9 +44,7 @@ export const useUpdateTaskStatus = () => {
       queryClient.setQueryData(["tasks"], (old) => {
         return old?.tasks?.map((task) => {
           const newTask = task._id === taskId ? { ...task, newStatus } : task;
-          console.log("====================================");
-          console.log({ previousTasks }, "newTask");
-          console.log("====================================");
+
           return newTask;
         });
       });

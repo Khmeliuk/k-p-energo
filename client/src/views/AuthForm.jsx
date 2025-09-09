@@ -23,6 +23,7 @@ export default function AuthForm() {
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const loginMutation = useAuthMutation(login);
   const registrationMutation = useAuthMutation(registration);
 

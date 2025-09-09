@@ -6,6 +6,8 @@ const ProtectedRoute = ({ children }) => {
 
   if (isLoading) return <div>Loading...</div>;
   if (!user || isError) {
+    console.log("redirect to /Auth");
+
     return <Navigate to="/Auth" />;
   }
 
