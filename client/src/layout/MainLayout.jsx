@@ -6,6 +6,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { logout } from "../service/API/axios";
 import { useSyncAuthAcrossTabs } from "../hooks/useSyncAuthAcrossTabs";
 import { useClickOutside } from "../hooks/useClickOutside ";
+import BottomNavBar from "../Components/BottomNavBar";
 
 const user = {
   avatarUrl: "https://i.pravatar.cc/300",
@@ -127,34 +128,8 @@ const MainLayout = () => {
 
         {/* Main Content */}
         <Outlet />
+        <BottomNavBar />
       </MainContainer>
-
-      {/* Footer */}
-      <Footer>
-        <FooterContent>
-          <FooterSection>
-            <FooterTitle>K-P Energo</FooterTitle>
-            <FooterText>Building amazing experiences together</FooterText>
-          </FooterSection>
-
-          {/* <FooterSection>
-            <FooterTitle>Quick Links</FooterTitle>
-            <FooterLink>About</FooterLink>
-            <FooterLink>Support</FooterLink>
-            <FooterLink>Privacy</FooterLink>
-          </FooterSection> */}
-
-          <FooterSection>
-            <FooterTitle>Contact</FooterTitle>
-            <FooterText>hello@myapp.com</FooterText>
-            <FooterText>+1 (555) 123-4567</FooterText>
-          </FooterSection>
-        </FooterContent>
-
-        <FooterBottom>
-          <FooterText>© 2025 K-P Energo. All rights reserved.</FooterText>
-        </FooterBottom>
-      </Footer>
     </Wrapper>
   );
 };
@@ -447,68 +422,6 @@ const Overlay = styled.div`
 
   @media (min-width: 1024px) {
     display: none;
-  }
-`;
-
-const Footer = styled.footer`
-  background-color: #1e293b;
-  color: white;
-  margin-top: auto;
-`;
-
-const FooterContent = styled.div`
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 2rem;
-  padding: 2rem 1rem;
-
-  @media (min-width: 640px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @media (min-width: 768px) {
-    grid-template-columns: repeat(3, 1fr);
-    padding: 2rem;
-  }
-`;
-
-const FooterSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-`;
-
-const FooterTitle = styled.h4`
-  font-size: 1rem;
-  font-weight: 600;
-  margin: 0 0 0.5rem 0;
-`;
-
-const FooterText = styled.p`
-  color: #cbd5e1;
-  font-size: 0.875rem;
-  margin: 0;
-`;
-
-const FooterLink = styled.a`
-  color: #cbd5e1;
-  font-size: 0.875rem;
-  text-decoration: none;
-  cursor: pointer;
-  transition: color 0.2s;
-
-  &:hover {
-    color: white;
-  }
-`;
-
-const FooterBottom = styled.div`
-  border-top: 1px solid #334155;
-  padding: 1rem;
-  text-align: center;
-
-  @media (min-width: 768px) {
-    padding: 1rem 2rem;
   }
 `;
 
