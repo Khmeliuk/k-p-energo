@@ -11,6 +11,7 @@ import UserProfilePage from "./views/Profile";
 import { useSyncAuthAcrossTabs } from "./hooks/useSyncAuthAcrossTabs";
 import PlanComponent from "./Components/PlanComponent";
 import BrigadesList from "./Components/BrigadesList";
+import Fact from "./Components/Fact";
 
 function App() {
   useSyncAuthAcrossTabs(); // слухаємо події з інших вкладок
@@ -23,11 +24,14 @@ function App() {
           <Route path="tasks" element={<TaskComponent />} />
           <Route path="Profile" element={<UserProfilePage />} />
           <Route path="plan" element={<PlanComponent />} />
-          <Route path="fact" element={<div>fact</div>} />
+          <Route path="fact" element={<Fact />} />
           <Route path="plan-fact" element={<div>plan-fact</div>} />
           <Route path="plansp" element={<div>plansp</div>} />
           <Route path="plan/brigades" element={<BrigadesList />} />
-          <Route path="brigade/:id" element={<div>Brigade Details</div>} />
+          <Route
+            path="plan/brigades/:id"
+            element={<div>Brigade Details</div>}
+          />
         </Route>
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

@@ -8,6 +8,7 @@ import {
 } from "@mui/material";
 import styled from "styled-components";
 import PropTypes from "prop-types";
+import AddTaskButton from "../smallComponent/AddTaskButton";
 
 const StyledDialog = styled(Dialog)`
   & .MuiPaper-root {
@@ -47,13 +48,7 @@ const CustomModal = ({ children }) => {
 
   return (
     <div>
-      <StyledButton
-        variant="contained"
-        color="primary"
-        onClick={handleClickOpen}
-      >
-        Add New Task
-      </StyledButton>
+      <AddTaskButton onClick={handleClickOpen} />
       <StyledDialog open={open} onClose={handleClose}>
         <DialogTitle>Add New Task</DialogTitle>
         <StyledDialogContent dividers>{children}</StyledDialogContent>
@@ -72,11 +67,3 @@ CustomModal.propTypes = {
 };
 
 export default CustomModal;
-
-const StyledButton = styled(Button)`
-  && {
-    position: fixed;
-    right: 1%;
-    bottom: 5%;
-  }
-`;

@@ -93,19 +93,10 @@ const TaskComponent = () => {
         onGetDateSort={setdateSort}
       >
         {isFetched && (
-          <>
-            {isCard ? (
-              <TaskboardCarts
-                tasks={filteredAndSortedTasks} // Використовуємо мемоізовані дані
-                isFetched={isFetched}
-              />
-            ) : (
-              <TaskboardText
-                tasks={filteredAndSortedTasks} // Використовуємо мемоізовані дані
-                isFetched={isFetched}
-              />
-            )}
-          </>
+          <TaskboardText
+            tasks={filteredAndSortedTasks} // Використовуємо мемоізовані дані
+            isFetched={isFetched}
+          />
         )}
       </TaskFilterPanel>
       <CustomModal>

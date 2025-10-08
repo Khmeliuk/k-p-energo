@@ -18,7 +18,7 @@ const BrigadesList = () => {
     <Paper elevation={2}>
       <List>
         {brigades.map((brigade) => (
-          <StyledLink to={`/brigade/:${brigade.id}`} key={brigade.id}>
+          <StyledLink to={`/plan/brigades/${brigade.id}`} key={brigade.id}>
             <ListItem>
               <ListItemText
                 primary={brigade.name}
