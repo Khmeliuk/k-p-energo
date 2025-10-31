@@ -12,3 +12,7 @@ export const brigades = [
   { id: 11, name: "Маківська", head: "Вужицький А.В." },
   { id: 12, name: "Смотрицька", head: "Прачик Ю.В." },
 ];
+
+export const departments = [1, 2, 3, 4];
+
+export const tasks = ["задача 1", "задача 2", "задача 3", "задача 4"];

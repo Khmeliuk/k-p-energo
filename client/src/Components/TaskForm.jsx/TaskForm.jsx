@@ -7,6 +7,7 @@ import ResponsiveDateTimePickers from "../smallComponent/ResponsiveDateTimePicke
 import AddressForm from "../smallComponent/AddressForm";
 import styled, { css } from "styled-components";
 import { motion } from "framer-motion";
+import { departments, tasks } from "../../data/brigades";
 
 /* === Motion Variants === */
 const containerVariants = {
@@ -64,7 +65,7 @@ const TaskForm = () => {
         <FlexRow variants={itemVariants}>
           <StyledSelectWrapper>
             <SelectSmall
-              options={["1", "2", "3", "4"]}
+              options={departments}
               name="department"
               value={formData.department}
               onChange={(value) => handleChange("department")(value)}
@@ -74,7 +75,7 @@ const TaskForm = () => {
           <StyledSelectWrapper>
             <MultipleSelectChip
               name={"task"}
-              options={["Задача 1", "Задача 2", "Задача 3", "Задача 4"]}
+              options={tasks}
               value={formData.task}
               onChange={(value) => handleChange("task")(value)}
             />
