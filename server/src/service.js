@@ -10,6 +10,7 @@ import fastifyMultipart from "@fastify/multipart";
 import fastifyCors from "@fastify/cors";
 import "dotenv/config";
 import statusRouter from "./routers/statusRouter.js";
+import prismaPlugin from "./plugins/prismaPlugin.js";
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -37,6 +38,10 @@ fastify.register(fastifyCookie);
 
 // mongoose
 fastify.register(mongooseConnect);
+
+//prisma plugin
+
+fastify.register(prismaPlugin);
 
 //Handles request to urls that do not exist on our route
 fastify.get("/notfound", async (request, reply) => {
@@ -80,15 +85,87 @@ fastify.get("/error", async (request, reply) => {
 });
 
 //This handles any error that gets thrown within the application
+// Оновлений Error Handler для роботи з Zod валідацією
 fastify.setErrorHandler(async (err, request, reply) => {
-  if (err.validation) {
-    reply.code(403);
-    return err.message;
-  }
-  request.log.error({ err });
-  reply.code(err.statusCode || 500);
+  // Обробка помилок валідації Zod
+  if (err.statusCode === 400 && err.errors) {
+    request.log.warn({
+      validation: err.message,
+      errors: err.errors,
+    });
 
-  return "I'm sorry, there was an error processing your request.";
+    return reply.code(400).send({
+      error: err.message,
+      details: err.errors.map((e) => ({
+        path: e.path.join("."),
+        message: e.message,
+      })),
+    });
+  }
+
+  // Обробка помилок Fastify валідації (якщо використовуєте)
+  if (err.validation) {
+    request.log.warn({ validation: err.message });
+    return reply.code(400).send({
+      error: "Validation error",
+      message: err.message,
+    });
+  }
+
+  // Обробка помилок Prisma (унікальність, foreign key тощо)
+  if (err.code === "P2002") {
+    request.log.warn({ prisma: err.message });
+    return reply.code(409).send({
+      error: "Conflict",
+      message: `${err.meta?.target?.[0] || "Field"} already exists`,
+    });
+  }
+
+  if (err.code === "P2025") {
+    request.log.warn({ prisma: err.message });
+    return reply.code(404).send({
+      error: "Not found",
+      message: "Resource not found",
+    });
+  }
+
+  // Обробка інших помилок Prisma
+  if (err.code?.startsWith("P")) {
+    request.log.error({ prisma: err });
+    return reply.code(500).send({
+      error: "Database error",
+      message: "I'm sorry, there was an error processing your request.",
+    });
+  }
+
+  // Обробка неправильних запитів (404, 405 тощо)
+  if (err.statusCode === 404) {
+    return reply.code(404).send({
+      error: "Not found",
+      message: "The requested resource was not found",
+    });
+  }
+
+  // Обробка помилок автентифікації (якщо використовуєте)
+  if (err.statusCode === 401 || err.statusCode === 403) {
+    request.log.warn({ auth: err.message });
+    return reply.code(err.statusCode).send({
+      error: "Unauthorized",
+      message: err.message,
+    });
+  }
+
+  // Обробка всіх інших помилок
+  request.log.error({
+    error: err.message,
+    statusCode: err.statusCode,
+    url: request.url,
+  });
+
+  return reply.code(err.statusCode || 500).send({
+    error: "Server error",
+    message: "I'm sorry, there was an error processing your request.",
+  });
 });
 
 //This handles the logic when a request is made to a route that does not exist
