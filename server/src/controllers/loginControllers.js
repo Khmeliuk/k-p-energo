@@ -1,11 +1,10 @@
 import "dotenv/config";
 import {
+  createOne,
   findAll,
   findOne,
-  createOne,
-  updateOne,
-  deleteOne,
-} from "../service/mongooseService.js";
+  findOneTask,
+} from "../service/prismaARM.js";
 
 const cookieOptions = {
   httpOnly: true,
@@ -77,7 +76,7 @@ export const deleteUserHandler = async function (req, reply) {
 
 export const loginHandler = async function (req, reply) {
   try {
-    const user = await findOne({ email: req.body.email }).select("-__v");
+    const user = await findOneTask({ email: req.body.email }).select("-__v");
     console.log("====================================");
     console.log("login", user);
     console.log("====================================");
@@ -130,6 +129,9 @@ export const logoutHandler = async function (req, reply) {
 
 export const registrationHandler = async function (req, reply) {
   try {
+    console.log("====================================");
+    console.log("registrationHandler");
+    console.log("====================================");
     const user = await createOne(req.body);
     console.log("====================================");
     console.log(user);

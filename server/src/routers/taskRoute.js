@@ -1,11 +1,4 @@
 import {
-  getAllTasks,
-  getTask,
-  updateTask,
-  deleteTask,
-  addTask,
-} from "../schema/taskSchema.js";
-import {
   getAllTaskHandler,
   getTaskHandler,
   addTaskHandler,
@@ -28,7 +21,7 @@ export default async function taskRouter(fastify, opt) {
     method: "GET",
     url: "/:query",
     onRequest: [fastify.authenticate],
-    schema: getTask,
+    // schema: getTask,
     attachValidation: "true",
     handler: getTaskHandler,
   });
@@ -46,7 +39,7 @@ export default async function taskRouter(fastify, opt) {
     method: "patch",
     url: "/",
     onRequest: [fastify.authenticate],
-    schema: updateTask,
+    // schema: updateTask,
     attachValidation: "true",
     handler: patchTaskHandler,
   });
@@ -64,7 +57,7 @@ export default async function taskRouter(fastify, opt) {
     method: "delete",
     url: "/:id",
     onRequest: [fastify.authenticate],
-    schema: deleteTask,
+    // schema: deleteTask,
     attachValidation: "true",
     handler: deleteTaskHandler,
   });

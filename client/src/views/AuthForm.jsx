@@ -39,6 +39,7 @@ export default function AuthForm() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
     setFormValues((prev) => ({ ...prev, [name]: value }));
 
     setErrors((prev) => ({ ...prev, [name]: "" }));
@@ -93,12 +94,17 @@ export default function AuthForm() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     if (!validateForm()) return;
 
     const payload = isLogin
       ? { email: formValues.email, password: formValues.password }
       : formValues;
     const mutation = isLogin ? loginMutation : registrationMutation;
+
+    console.log("====================================");
+    console.log("formValues", formValues);
+    console.log("====================================");
 
     mutation.mutate(payload, {
       onSuccess: () => navigate("/task"),
@@ -142,19 +148,6 @@ export default function AuthForm() {
                   <ErrorInside>{errors.lastName}</ErrorInside>
                 )}
               </InputWrapper>
-
-              {/* <InputWrapper>
-                <Input
-                  name="department"
-                  placeholder="Department"
-                  value={formValues.department}
-                  onChange={handleChange}
-                  $hasError={!!errors.department}
-                />
-                {errors.department && (
-                  <ErrorInside>{errors.department}</ErrorInside>
-                )}
-              </InputWrapper> */}
 
               <SelectWrapper>
                 <SelectSmall

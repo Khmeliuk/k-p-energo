@@ -46,6 +46,9 @@ export const findOneTask = async (params) => {
 };
 
 export const createOne = async (newUser) => {
+  console.log("====================================");
+  console.log("createOne  ");
+  console.log("====================================");
   return await prisma.user.create({
     data: newUser,
   });

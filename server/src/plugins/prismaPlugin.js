@@ -1,11 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import fastifyPlugin from "fastify-plugin";
 
-/**
- * Prisma плагін для Fastify.
- * @param {FastifyInstance} fastify - Інстанс Fastify.
- * @param {Object} options - Опції плагіна.
- */
 async function prismaPlugin(fastify, options) {
   const prisma = new PrismaClient();
 

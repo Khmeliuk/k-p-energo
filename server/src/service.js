@@ -5,26 +5,21 @@ import jwt from "./plugins/jwtPlugin.js";
 import userRouter from "./routers/userRouter.js";
 import authorization from "./routers/authorization.js";
 import taskRouter from "./routers/taskRoute.js";
-import decoratorsPlugin from "./decorators/decorators.js";
 import fastifyMultipart from "@fastify/multipart";
 import fastifyCors from "@fastify/cors";
 import "dotenv/config";
 import statusRouter from "./routers/statusRouter.js";
 import prismaPlugin from "./plugins/prismaPlugin.js";
+import pino from "pino";
+import authenticatePlugin from "./plugins/authenticatePlugin.js";
+import prismaKeepAlive from "./plugins/prisma-keep-alive.js";
 
 const isProd = process.env.NODE_ENV === "production";
 
-const fastify = Fastify({
-  logger: isProd
-    ? { level: "info" } // чистий JSON для продакшну
-    : {
-        level: "debug",
-        transport: {
-          target: "pino-pretty",
-          options: { colorize: true, translateTime: "SYS:standard" },
-        },
-      },
-});
+const loggerInstance = pino();
+const fastify = Fastify({ loggerInstance });
+
+// multipart plugin
 
 fastify.register(fastifyMultipart, {
   addToBody: true, // Додаємо поля з formData до request.body
@@ -65,8 +60,11 @@ fastify.register(fastifyCors, {
   credentials: true,
 });
 
-// decorators
-fastify.register(decoratorsPlugin);
+// authenticatePlugin
+fastify.register(authenticatePlugin);
+// prisma keep alive
+
+fastify.register(prismaKeepAlive, { interval: 5 * 60 * 1000 }); // 5 хвилин
 
 // custom routers
 fastify.register(
