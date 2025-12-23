@@ -2,9 +2,9 @@ import "dotenv/config";
 import {
   createOne,
   findAll,
-  findOne,
-  findOneTask,
+  findOneByUniqueField,
 } from "../service/prismaARM.js";
+import fastify from "fastify";
 
 const cookieOptions = {
   httpOnly: true,
@@ -29,7 +29,7 @@ export const getAllUserHandler = async function (req, reply) {
 export const getUserHandler = async function (req, reply) {
   try {
     const params = req.params.id;
-    const user = await findOne(params);
+    const user = await findOneByUniqueField(params);
     reply.status(200).send(user);
   } catch (error) {
     reply.status(404).send(error);
@@ -76,7 +76,12 @@ export const deleteUserHandler = async function (req, reply) {
 
 export const loginHandler = async function (req, reply) {
   try {
-    const user = await findOneTask({ email: req.body.email }).select("-__v");
+    console.log("====================================");
+    console.log(req.body.email);
+    console.log("====================================");
+    const user = await req.server.prisma.user.findUnique({
+      where: { email: req.body.email },
+    });
     console.log("====================================");
     console.log("login", user);
     console.log("====================================");
@@ -85,7 +90,7 @@ export const loginHandler = async function (req, reply) {
       return reply.status(401).send("invalid login or password");
     }
 
-    const isValid = await user.isValidPassword(req.body.password);
+    const isValid = await user.comparePassword(req.body.password);
 
     if (!isValid) {
       return reply.status(401).send("invalid login or password");
@@ -129,36 +134,98 @@ export const logoutHandler = async function (req, reply) {
 
 export const registrationHandler = async function (req, reply) {
   try {
-    console.log("====================================");
-    console.log("registrationHandler");
-    console.log("====================================");
-    const user = await createOne(req.body);
-    console.log("====================================");
-    console.log(user);
-    console.log("====================================");
-    const token = req.server.jwt.sign({
-      _id: user._id,
-      name: user.name,
-      lastName: user.lastName,
-      email: user.email,
-      role: user.role,
-      department: user.department,
+    const newUser = req.validatedBody;
+
+    // ✅ Перевірка чи користувач вже існує
+    const existingUser = await req.server.prisma.user.findUnique({
+      where: { email: newUser.email },
     });
-    reply
-      .status(201)
+
+    if (existingUser) {
+      return reply.code(409).send({
+        statusCode: 409,
+        error: "Conflict",
+        message: "Email already registered",
+      });
+    }
+
+    // ✅ Хешуємо пароль
+    const hashedPassword = await req.server.hash.password(newUser.password);
+
+    // ✅ Створюємо користувача
+    const user = await req.server.prisma.user.create({
+      data: {
+        ...newUser,
+        password: hashedPassword,
+      },
+      select: {
+        id: true,
+        name: true,
+        lastName: true,
+        email: true,
+        role: true,
+        department: true,
+        createdAt: true,
+        updatedAt: true,
+        isActive: true,
+      },
+    });
+
+    // ✅ Логування (видалити в продакшені)
+    req.server.log.info({ userId: user.id }, "New user registered");
+
+    // ✅ Генеруємо JWT токен (тільки необхідні дані)
+    const token = req.server.jwt.sign(
+      {
+        userId: user.id,
+        email: user.email,
+        role: user.role,
+      },
+      {
+        expiresIn: "7d", // Опціонально: термін дії токена
+      }
+    );
+
+    // ✅ Встановлюємо cookie і відправляємо відповідь
+    return reply
+      .code(201)
       .setCookie("token", token, {
         httpOnly: true,
         sameSite: "None",
         secure: true,
-        maxAge: 3600, // 1 година
+        maxAge: 7 * 24 * 60 * 60, // 7 днів (в секундах)
         path: "/",
       })
-      .send(user);
+      .send({
+        statusCode: 201,
+        message: "User registered successfully",
+        user,
+      });
   } catch (error) {
-    if (error.code === 11000) {
-      reply.status(400).send(`${error.message}, email mast be unique`);
+    // ✅ Обробка Prisma помилки унікальності
+    if (error.code === "P2002") {
+      return reply.code(409).send({
+        statusCode: 409,
+        error: "Conflict",
+        message: "Email already exists",
+      });
     }
-    reply.status(404).send(error.message);
+
+    // ✅ Логування помилки
+    req.server.log.error(
+      {
+        error: error.message,
+        stack: error.stack,
+      },
+      "Registration error"
+    );
+
+    // ✅ Загальна помилка
+    return reply.code(500).send({
+      statusCode: 500,
+      error: "Internal Server Error",
+      message: "Registration failed",
+    });
   }
 };
 

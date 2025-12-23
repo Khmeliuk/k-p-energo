@@ -33,9 +33,18 @@ export const findAllTaskDepartmentTask = async (department) => {
     where: { department },
   });
 };
-export const findOne = async (params) => {
-  return await prisma.user.findUnique({
-    where: params,
+// Find one by unique fields: id or email
+export const findOneByUniqueField = async ({ id, email }) => {
+  if (!id && !email) {
+    throw new Error("findOne requires id or email");
+  }
+
+  if (id && email) {
+    throw new Error("findOne accepts only one unique field");
+  }
+
+  return prisma.user.findUnique({
+    where: id ? { id } : { email },
   });
 };
 

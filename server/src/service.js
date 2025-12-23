@@ -10,40 +10,42 @@ import fastifyCors from "@fastify/cors";
 import "dotenv/config";
 import statusRouter from "./routers/statusRouter.js";
 import prismaPlugin from "./plugins/prismaPlugin.js";
-import pino from "pino";
+import { z } from "zod";
 import authenticatePlugin from "./plugins/authenticatePlugin.js";
-import prismaKeepAlive from "./plugins/prisma-keep-alive.js";
+import dbKeepalive from "./plugins/db-keepalive.js";
+import hashPlugin from "./plugins/hashPlugin.js";
 
 const isProd = process.env.NODE_ENV === "production";
 
-const loggerInstance = pino();
-const fastify = Fastify({ loggerInstance });
-
-// multipart plugin
+const fastify = Fastify({
+  logger: isProd
+    ? true
+    : {
+        transport: {
+          target: "pino-pretty",
+          options: {
+            colorize: true,
+          },
+        },
+      },
+});
 
 fastify.register(fastifyMultipart, {
-  addToBody: true, // Додаємо поля з formData до request.body
-  attachFieldsToBody: true, // Додаємо поля з formData до body як звичайні об'єкти
-  throwFileError: true, // Кидаємо помилку, якщо знайдено файл
+  addToBody: true,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB ліміт
+  },
 });
 
-// register JWT plugin and cookey
 fastify.register(jwt);
 fastify.register(fastifyCookie);
-
-// mongoose
-fastify.register(mongooseConnect);
-
-//prisma plugin
-
+// fastify.register(mongooseConnect);
 fastify.register(prismaPlugin);
 
-//Handles request to urls that do not exist on our route
-fastify.get("/notfound", async (request, reply) => {
-  reply.callNotFound();
-});
+//Хешування паролів
+fastify.register(hashPlugin, { saltRounds: 5 });
 
-// Підключення плагіна CORS
+// Налаштування CORS
 fastify.register(fastifyCors, {
   origin: (origin, cb) => {
     const allowedOrigins = [
@@ -51,22 +53,27 @@ fastify.register(fastifyCors, {
       "https://k-p-energy.netlify.app",
     ];
 
+    // Дозволяємо всі origins в dev режимі
+    if (!isProd) {
+      cb(null, true);
+      return;
+    }
+
+    // У продакшені перевіряємо білий список
     if (!origin || allowedOrigins.includes(origin)) {
-      cb(null, true); // ✅ дозволено
+      cb(null, true);
     } else {
-      cb(new Error("Not allowed"), false); // ❌ заборонено
+      cb(new Error("Not allowed by CORS"), false);
     }
   },
   credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"], // ✅ Явно вказуємо методи
+  allowedHeaders: ["Content-Type", "Authorization"], // ✅ Дозволені заголовки
 });
 
-// authenticatePlugin
 fastify.register(authenticatePlugin);
-// prisma keep alive
+fastify.register(dbKeepalive, { interval: 5 * 60 * 1000 });
 
-fastify.register(prismaKeepAlive, { interval: 5 * 60 * 1000 }); // 5 хвилин
-
-// custom routers
 fastify.register(
   async function apiRoutes(fastify) {
     fastify.register(authorization, { prefix: "/auth" });
@@ -77,99 +84,121 @@ fastify.register(
   { prefix: "/api/v1" }
 );
 
-//This route gets called if an error occurs within the app and throws an error
-fastify.get("/error", async (request, reply) => {
-  throw new Error("kaboom");
-});
-
-//This handles any error that gets thrown within the application
-// Оновлений Error Handler для роботи з Zod валідацією
-fastify.setErrorHandler(async (err, request, reply) => {
-  // Обробка помилок валідації Zod
-  if (err.statusCode === 400 && err.errors) {
-    request.log.warn({
-      validation: err.message,
-      errors: err.errors,
-    });
-
+fastify.setErrorHandler(async (error, request, reply) => {
+  if (error instanceof z.ZodError) {
+    request.log.warn({ validation: error });
     return reply.code(400).send({
-      error: err.message,
-      details: err.errors.map((e) => ({
-        path: e.path.join("."),
-        message: e.message,
-      })),
+      statusCode: 400,
+      error: "Bad Request",
+      message: "Validation failed",
+      details: error.details || error.errors || [],
     });
   }
 
-  // Обробка помилок Fastify валідації (якщо використовуєте)
-  if (err.validation) {
-    request.log.warn({ validation: err.message });
+  // Fastify validation
+  if (error.validation) {
+    request.log.warn({ validation: error });
     return reply.code(400).send({
-      error: "Validation error",
-      message: err.message,
+      statusCode: 400,
+      error: "Validation Error",
+      message: error.message,
     });
   }
 
-  // Обробка помилок Prisma (унікальність, foreign key тощо)
-  if (err.code === "P2002") {
-    request.log.warn({ prisma: err.message });
+  // Prisma errors
+  if (error.code === "P2002") {
+    const field = error.meta?.target?.[0] || "Field";
+    request.log.warn({ prisma: error.code });
     return reply.code(409).send({
+      statusCode: 409,
       error: "Conflict",
-      message: `${err.meta?.target?.[0] || "Field"} already exists`,
+      message: `${field} already exists`,
     });
   }
 
-  if (err.code === "P2025") {
-    request.log.warn({ prisma: err.message });
+  if (error.code === "P2025") {
+    request.log.warn({ prisma: error.code });
     return reply.code(404).send({
-      error: "Not found",
+      statusCode: 404,
+      error: "Not Found",
       message: "Resource not found",
     });
   }
 
-  // Обробка інших помилок Prisma
-  if (err.code?.startsWith("P")) {
-    request.log.error({ prisma: err });
+  if (error.code?.startsWith("P")) {
+    request.log.error({ prisma: error });
     return reply.code(500).send({
-      error: "Database error",
-      message: "I'm sorry, there was an error processing your request.",
+      statusCode: 500,
+      error: "Database Error",
+      message: "Database operation failed",
     });
   }
 
-  // Обробка неправильних запитів (404, 405 тощо)
-  if (err.statusCode === 404) {
+  // HTTP errors
+  if (error.statusCode === 401 || error.statusCode === 403) {
+    request.log.warn({ auth: error.message });
+    return reply.code(error.statusCode).send({
+      statusCode: error.statusCode,
+      error: error.statusCode === 401 ? "Unauthorized" : "Forbidden",
+      message: error.message,
+    });
+  }
+
+  if (error.statusCode === 404) {
     return reply.code(404).send({
-      error: "Not found",
+      statusCode: 404,
+      error: "Not Found",
       message: "The requested resource was not found",
     });
   }
 
-  // Обробка помилок автентифікації (якщо використовуєте)
-  if (err.statusCode === 401 || err.statusCode === 403) {
-    request.log.warn({ auth: err.message });
-    return reply.code(err.statusCode).send({
-      error: "Unauthorized",
-      message: err.message,
-    });
-  }
-
-  // Обробка всіх інших помилок
+  // Generic errors
   request.log.error({
-    error: err.message,
-    statusCode: err.statusCode,
-    url: request.url,
+    error: error.message,
+    stack: error.stack,
+    statusCode: error.statusCode,
   });
 
-  return reply.code(err.statusCode || 500).send({
-    error: "Server error",
-    message: "I'm sorry, there was an error processing your request.",
+  return reply.code(error.statusCode || 500).send({
+    statusCode: error.statusCode || 500,
+    error: "Internal Server Error",
+    message: isProd
+      ? "An error occurred processing your request"
+      : error.message,
   });
 });
 
-//This handles the logic when a request is made to a route that does not exist
 fastify.setNotFoundHandler(async (request, reply) => {
-  reply.code(404);
-  return "I'm sorry, I couldn't find what you were looking for.";
+  return reply.code(404).send({
+    statusCode: 404,
+    error: "Not Found",
+    message: "Route not found",
+  });
 });
+
+// Graceful shutdown
+const SHUTDOWN_TIMEOUT = 10000;
+
+async function shutdown(signal) {
+  console.log(`${signal} received, shutting down gracefully...`);
+
+  const timeout = setTimeout(() => {
+    console.error("Shutdown timeout, forcing exit");
+    process.exit(1);
+  }, SHUTDOWN_TIMEOUT);
+
+  try {
+    await fastify.close();
+    clearTimeout(timeout);
+    process.exit(0);
+  } catch (err) {
+    console.error("Shutdown error:", err);
+    clearTimeout(timeout);
+    process.exit(1);
+  }
+}
+
+process.on("SIGINT", () => shutdown("SIGINT"));
+process.on("SIGTERM", () => shutdown("SIGTERM"));
 
 export default fastify;

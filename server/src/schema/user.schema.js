@@ -10,12 +10,7 @@ export const createUserInputSchema = z
       errorMap: () => ({ message: "Department must be 1, 2, or 3" }),
     }),
     password: z.string().min(5, "Min 5 chars").max(16, "Max 16 chars"),
-    confirmPassword: z.string(),
     isActive: z.boolean().default(false),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ["confirmPassword"],
   })
   .strip();
 
